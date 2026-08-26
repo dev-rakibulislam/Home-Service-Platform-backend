@@ -1,9 +1,9 @@
+generated
 node_modules/
 
 .env
 .env.local
 *.env
-generated
 
 dist/
 build/
@@ -12,8 +12,3 @@ logs
 *.log
 
 .vscode/
-
-/src/generated/prisma
-
-note.md
-/plan

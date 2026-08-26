@@ -1,63 +1,64 @@
-import bcrypt from "bcryptjs";
-import { prisma } from "../../config/prisma";
+// biome-ignore assist/source/organizeImports: <explanation>
 import type { UserRegisterPayload } from "./auth.validator";
-import { generateToken } from "../../core/utils/jwt";
-import { existingUser } from "../../core/utils/checkUser";
-import { config } from "../../config/env";
+import { getExistingUser } from "../../core/utils/getExistingUser";
 import AppError from "../../core/error/appError";
+import bcrypt from "bcryptjs";
+import { config } from "../../config/env";
+import { prisma } from "../../config/prisma";
+import { UserRole } from "../../../generated/prisma/enums";
 
 const registerUserInDb = async (payload: UserRegisterPayload) => {
-	const {address} = payload;
+	const {
+		email,
+		password,
+		name,
+		role,
+		address,
+		bio,
+		hourlyRate,
+		phoneNumber,
+		experienceYears,
+		skills,
+	} = payload;
 
-	// const existingUserRecord = await existingUser(email);
+	const existingUserRecord = await getExistingUser(email);
 
-	// if (existingUserRecord) {
-	// 	throw new AppError(409, "User already exists with this email");
-	// }
+	if (existingUserRecord) {
+		throw new AppError(409, "User already exists with this email");
+	}
 
-	// const hashedPassword = await bcrypt.hash(
-	// 	password,
-	// 	Number(config.bcrypt_salt_rounds),
-	// );
+	const hashedPassword = await bcrypt.hash(
+		password,
+		Number(config.bcrypt_salt_rounds),
+	);
 
-	// const userData = {
-	// 	email,
-	// 	password: hashedPassword,
-	// 	firstName,
-	// 	lastName,
-	// 	phoneNumber,
-	// 	role,
-	// };
+	const result = await prisma.user.create({
+		data: {
+			email,
+			address,
+			password: hashedPassword,
+			name,
+			phoneNumber,
+			role,
 
-	// if (role === UserRole.TECHNICIAN) {
-	// 	if (!bio || !hourlyRate || yearsOfExperience === undefined) {
-	// 		throw new AppError(
-	// 			400,
-	// 			"Bio, hourly rate and years of experience are required for technicians",
-	// 		);
-	// 	}
-	// 	Object.assign(userData, {
-	// 		technicianProfile: {
-	// 			create: {
-	// 				bio,
-	// 				userName: userName
-	// 					? userName
-	// 					: `fixitnow-${Math.ceil(Math.random() * 1000)}-${Date.now()}`,
-	// 				hourlyRate,
-	// 				yearsOfExperience,
-	// 			},
-	// 		},
-	// 	});
-	// }
+			...(role === "TECHNICIAN" && {
+				technicianProfile: {
+					create: {
+						bio: bio!,
+						skills: skills!,
+						hourlyRate: hourlyRate!,
+						experienceYears: experienceYears!,
+					},
+				},
+			}),
+		},
 
-	// const result = await prisma.user.create({
-	// 	data: { ...userData },
-	// 	omit: { password: true },
-	// 	include: {
-	// 		...(userData.role === UserRole.TECHNICIAN && { technicianProfile: true }),
-	// 	},
-	// });
-
+		omit: { password: true },
+		include: {
+			technicianProfile: true,
+		},
+	});
+	console.log(result);
 	// const JwtPayload = {
 	// 	userId: result.id,
 	// 	email: result.email,

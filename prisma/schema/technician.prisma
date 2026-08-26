@@ -3,7 +3,6 @@ model TechnicianProfile {
   userId          String           @unique
   userName        String?          @db.VarChar(100)
   bio             String           @unique @db.VarChar(150)
-  address        String
   skills          String[]
   experienceYears Int
   hourlyRate      Decimal          @db.Decimal(10, 2)
