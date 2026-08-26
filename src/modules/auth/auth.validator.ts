@@ -45,11 +45,10 @@ export const userRegisterSchema = userLoginSchema
 			.max(500, "Bio must be less than 500 characters long")
 			.optional(),
 
-		hourlyRate: z
-			.string()
-			.trim()
-			.min(1, "Hourly rate must be at least 1 character long")
-			.max(20, "Hourly rate must be less than 20 characters long")
+		hourlyRate: z.coerce
+			.number()
+			.min(1, "Hourly rate must be at least 1")
+			.max(99999999.99, "Hourly rate is too high")
 			.optional(),
 
 		experienceYears: z
