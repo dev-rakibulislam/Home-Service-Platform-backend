@@ -7,6 +7,11 @@ import { createCategorySchema } from "./category.validator";
 const router = Router();
 
 router.get(
+	"/users",
+	authMiddleware("ADMIN"),
+	categoryController.getAllUserController,
+);
+router.get(
 	"/categories",
 	authMiddleware("ADMIN"),
 	categoryController.getAllCategoryController,
