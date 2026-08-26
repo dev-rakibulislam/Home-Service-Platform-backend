@@ -36,6 +36,12 @@ export const userRegisterSchema = userLoginSchema
 			.min(5, "Address must be at least 5 characters long")
 			.max(255, "Address must be less than 255 characters long")
 			.optional(),
+		userName: z
+			.string()
+			.trim()
+			.min(5, "Address must be at least 5 characters long")
+			.max(100, "Address must be less than 100 characters long")
+			.optional(),
 
 		role: z.enum(UserRole).default("CUSTOMER"),
 		bio: z
@@ -90,6 +96,13 @@ export const userRegisterSchema = userLoginSchema
 				code: "custom",
 				path: ["hourlyRate"],
 				message: "Hourly rate is required for technicians",
+			});
+		}
+		if (!data.userName) {
+			ctx.addIssue({
+				code: "custom",
+				path: ["userName"],
+				message: "userName is required for technicians",
 			});
 		}
 

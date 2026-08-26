@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import globalErrorHandler from "./core/error/globalErrorHandler";
 import { adminRouter } from "./modules/admin/admin.route";
 import { categoryRouter } from "./modules/category/category.route";
+import { serviceRouter } from "./modules/service/service.route";
 const app: Express = express();
 
 app.use(express.json());
@@ -16,6 +17,7 @@ app.get("/", (_, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/services", serviceRouter);
 
 
 
