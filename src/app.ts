@@ -6,6 +6,8 @@ import globalErrorHandler from "./core/error/globalErrorHandler";
 import { adminRouter } from "./modules/admin/admin.route";
 import { categoryRouter } from "./modules/category/category.route";
 import { serviceRouter } from "./modules/service/service.route";
+import { technicianRouter } from "./modules/technician/technician.route";
+import { bookingRouter } from "./modules/booking/booking.route";
 const app: Express = express();
 
 app.use(express.json());
@@ -17,13 +19,13 @@ app.get("/", (_, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/technician", technicianRouter);
+app.use("/api/v1/booking", bookingRouter);
 app.use("/api/v1/services", serviceRouter);
-
-
 
 app.use(globalErrorHandler);
 
-app.use((req, res, next) => {
+app.use((req, _, next) => {
 	next(
 		new AppError(
 			404,

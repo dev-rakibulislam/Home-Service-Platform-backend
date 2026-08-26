@@ -15,8 +15,13 @@ enum TechnicianStatus {
   INACTIVE
 }
 
-enum Try {
-  ACTIVE
-  
-  INACTIVE
+enum DayOfWeek {
+  SATURDAY
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
 }
+

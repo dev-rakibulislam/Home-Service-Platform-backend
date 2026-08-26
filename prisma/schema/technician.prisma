@@ -15,4 +15,5 @@ model TechnicianProfile {
   services Service[]
 
   @@map("technicianProfiles")
+  availabilitySlots AvailabilitySlot[]
 }

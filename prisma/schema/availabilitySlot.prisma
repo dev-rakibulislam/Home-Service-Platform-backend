@@ -1,0 +1,10 @@
+model AvailabilitySlot {
+  id           String            @id @default(uuid())
+  technicianId String
+  dayOfWeek    DayOfWeek         @default(SUNDAY)
+  startTime    String
+  endTime      String
+  technician   TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  @@map("availabilitySlots")
+}
