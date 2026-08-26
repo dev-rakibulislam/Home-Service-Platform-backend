@@ -53,11 +53,17 @@ const globalErrorHandler = (
 	}
 
 	if (error instanceof PrismaClientValidationError) {
-		return sendResponse(res, {
-			code: 400,
-			message: "Database validation error",
-		});
-	}
+  return sendResponse(res, {
+    code: 400,
+    message: "Database validation error",
+    errorDetails: [
+      {
+        path: "database",
+        message: error.message,
+      },
+    ],
+  });
+}
 
 	sendResponse(res, {
 		code: 500,

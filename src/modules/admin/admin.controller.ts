@@ -11,6 +11,25 @@ const getAllUserController = catchAsync(async (_: Request, res: Response) => {
 	});
 });
 
+const updateUserController = catchAsync(async (req: Request, res: Response) => {
+	const id = req.params?.id;
+	if (!id) {
+		return sendResponse(res, {
+			code: 404,
+			message: "id not found.",
+		});
+	}
+	const data = await categoryService.updateUserService(
+		id as string,
+		req.body.status,
+	);
+	sendResponse(res, {
+		code: 200,
+		message: "user fetch successfully.",
+		data,
+	});
+});
+
 const getAllCategoryController = catchAsync(
 	async (_: Request, res: Response) => {
 		sendResponse(res, {
@@ -34,6 +53,7 @@ const createCategoryController = catchAsync(
 
 export const categoryController = {
 	getAllUserController,
+	updateUserController,
 	getAllCategoryController,
 	createCategoryController,
 };

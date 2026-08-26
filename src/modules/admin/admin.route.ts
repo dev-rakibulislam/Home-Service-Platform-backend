@@ -4,6 +4,7 @@ import authMiddleware from "../../core/middleware/authentication";
 import { categoryController } from "./admin.controller";
 import { validateData } from "../../core/middleware/validator.middleware";
 import { createCategorySchema } from "./category.validator";
+import { userStatusSchema } from "./userStatus.validator";
 const router = Router();
 
 router.get(
@@ -11,6 +12,20 @@ router.get(
 	authMiddleware("ADMIN"),
 	categoryController.getAllUserController,
 );
+
+router.patch(
+	"/users/:id",
+	authMiddleware("ADMIN"),
+	validateData(userStatusSchema),
+	categoryController.updateUserController,
+);
+
+// router.get(
+// 	"/bookings",
+// 	authMiddleware("ADMIN"),
+// 	categoryController.getAllCategoryController,
+// );
+
 router.get(
 	"/categories",
 	authMiddleware("ADMIN"),
