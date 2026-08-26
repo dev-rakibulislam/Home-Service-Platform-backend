@@ -7,6 +7,7 @@ import { config } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { UserRole } from "../../../generated/prisma/enums";
 import { generateToken, jwtCookiePayload } from "../../core/utils/jwt";
+import { AuthenticatedUser } from "../../types/auth";
 
 const registerUserInDb = async (payload: UserRegisterPayload) => {
 	const {
@@ -106,7 +107,19 @@ const loginUserInDb = async (payload: UserLoginPayload) => {
 	return { accessToken, refreshToken };
 };
 
+const getProfileFromDb = async (payload: AuthenticatedUser) => {
+	const getProfle = await prisma.user.findUnique({
+		where: {
+			...payload,
+		},
+		omit: { password: true },
+		include: { technicianProfile: true },
+	});
+	return getProfle;
+};
+
 export const authService = {
 	registerUserInDb,
+	getProfileFromDb,
 	loginUserInDb,
 };
