@@ -3,6 +3,7 @@ import { authRouter } from "./modules/auth/auth.route";
 import AppError from "./core/error/appError";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./core/error/globalErrorHandler";
+import { adminRouter } from "./modules/admin/admin.route";
 const app: Express = express();
 
 app.use(express.json());
@@ -12,8 +13,9 @@ app.get("/", (_, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
 
-// app.use("/api/v1/auth", authRouter);
+
 // app.use("/api/v1/auth", authRouter);
 
 app.use(globalErrorHandler);
