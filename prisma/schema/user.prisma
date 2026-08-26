@@ -15,4 +15,5 @@ model User {
 
 
   @@map("users")
+  bookings Booking[]
 }

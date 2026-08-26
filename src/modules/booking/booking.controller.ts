@@ -5,11 +5,14 @@ import { bookingService } from "./booking.service";
 
 const createBookingController = catchAsync(
 	async (req: Request, res: Response) => {
-		const data = await bookingService.createAvailabilityService();
+		const data = await bookingService.createAvailabilityService(
+			req.body,
+			req.user,
+		);
 
 		sendResponse(res, {
 			code: 201,
-			message: "service created successfully.",
+			message: "booking created successfully.",
 			data,
 		});
 	},
