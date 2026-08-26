@@ -2,7 +2,7 @@ model TechnicianProfile {
   id              String           @id @default(uuid())
   userId          String           @unique
   userName        String?          @db.VarChar(100)
-  bio             String           @unique @db.VarChar(150)
+  bio             String           @db.VarChar(150)
   skills          String[]
   experienceYears Int
   hourlyRate      Decimal          @db.Decimal(10, 2)

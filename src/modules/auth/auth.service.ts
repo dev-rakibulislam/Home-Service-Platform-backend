@@ -1,11 +1,12 @@
 // biome-ignore assist/source/organizeImports: <explanation>
-import type { UserRegisterPayload } from "./auth.validator";
+import type { UserLoginPayload, UserRegisterPayload } from "./auth.validator";
 import { getExistingUser } from "../../core/utils/getExistingUser";
 import AppError from "../../core/error/appError";
 import bcrypt from "bcryptjs";
 import { config } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { UserRole } from "../../../generated/prisma/enums";
+import { generateToken, jwtCookiePayload } from "../../core/utils/jwt";
 
 const registerUserInDb = async (payload: UserRegisterPayload) => {
 	const {
@@ -58,31 +59,54 @@ const registerUserInDb = async (payload: UserRegisterPayload) => {
 			technicianProfile: true,
 		},
 	});
-	console.log(result);
-	// const JwtPayload = {
-	// 	userId: result.id,
-	// 	email: result.email,
-	// 	role: result.role,
-	// 	status: result.status,
-	// };
 
-	// const accessToken = await generateToken(JwtPayload, {
-	// 	secret: config.jwt.jwt_access_secret,
-	// 	expiresIn: Number(config.jwt.jwt_access_expires_in),
-	// });
+	const JwtPayload = await jwtCookiePayload(result);
 
-	// const refreshToken = await generateToken(JwtPayload, {
-	// 	secret: config.jwt.jwt_refresh_secret,
-	// 	expiresIn: config.jwt.jwt_refresh_expires_in,
-	// });
+	const accessToken = await generateToken(JwtPayload, {
+		expiresIn: config.jwt.jwt_access_expires_in!,
+		secret: config.jwt.jwt_access_secret,
+	});
 
-	// return {
-	// 	result,
-	// 	accessToken,
-	// 	refreshToken,
-	// };
+	const refreshToken = await generateToken(JwtPayload, {
+		secret: config.jwt.jwt_refresh_secret,
+		expiresIn: config.jwt.jwt_refresh_expires_in!,
+	});
+
+	return {
+		accessToken,
+		refreshToken,
+	};
+};
+
+const loginUserInDb = async (payload: UserLoginPayload) => {
+	const existingUserRecord = await getExistingUser(payload.email);
+	console.log(existingUserRecord);
+	if (existingUserRecord === null) {
+		throw new AppError(409, "user not found. Please register");
+	}
+	const { password: passwordDB } = existingUserRecord;
+
+	const isPasswordMatch = await bcrypt.compare(payload.password, passwordDB);
+
+	if (!isPasswordMatch) {
+		throw new AppError(401, "Invalid credentials");
+	}
+	const JwtPayload = await jwtCookiePayload(existingUserRecord);
+
+	const accessToken = await generateToken(JwtPayload, {
+		expiresIn: config.jwt.jwt_access_expires_in!,
+		secret: config.jwt.jwt_access_secret,
+	});
+
+	const refreshToken = await generateToken(JwtPayload, {
+		secret: config.jwt.jwt_refresh_secret,
+		expiresIn: config.jwt.jwt_refresh_expires_in!,
+	});
+
+	return { accessToken, refreshToken };
 };
 
 export const authService = {
 	registerUserInDb,
+	loginUserInDb,
 };
