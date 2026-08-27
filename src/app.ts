@@ -8,10 +8,13 @@ import { categoryRouter } from "./modules/category/category.route";
 import { serviceRouter } from "./modules/service/service.route";
 import { technicianRouter } from "./modules/technician/technician.route";
 import { bookingRouter } from "./modules/booking/booking.route";
+import { paymentRouter } from "./modules/payment/payment.route";
 const app: Express = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
 app.get("/", (_, res) => {
 	res.status(200).send("Hello, World!");
 });
@@ -21,6 +24,7 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/technician", technicianRouter);
 app.use("/api/v1/booking", bookingRouter);
+app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/services", serviceRouter);
 
 app.use(globalErrorHandler);

@@ -35,9 +35,16 @@ export const config = {
 		jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
 		jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
 	},
-
+	sslcommerz: {
+		sandboxApiUrl:process.env.Sandbox_API_URL,
+		liveApiUrl:process.env.Live_API_URL,
+		storeId: process.env.store_id,
+		storePassword: process.env.store_passwd,
+		isLive: process.env.is_live,
+		successUrl: process.env.success_url,
+		failUrl: process.env.fail_url,
+		cancelUrl: process.env.cancel_url,
+		ipnUrl: process.env.ipn_url
+	},
 };
-
-// stripe_product_price_id: process.env.STRIPE_PRODUCT_PRICE_ID!,
-// stripe_secret_key: process.env.STRIPE_SECRET_KEY!,
-// stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET!,
+console.log(config);

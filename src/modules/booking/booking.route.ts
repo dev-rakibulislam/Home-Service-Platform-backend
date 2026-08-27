@@ -9,8 +9,8 @@ const router = Router();
 
 router.post(
 	"/",
-	authMiddleware(UserRole.TECHNICIAN),
-  validateData(CreateBookingSchema),
+	authMiddleware(UserRole.CUSTOMER),
+	validateData(CreateBookingSchema),
 	bookingController.createBookingController,
 );
 

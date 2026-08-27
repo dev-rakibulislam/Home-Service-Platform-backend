@@ -28,19 +28,13 @@ enum DayOfWeek {
 enum BookingStatus {
   PENDING
   ACCEPTED
-  DECLINED
   IN_PROGRESS
   COMPLETED
   CANCELLED
 }
 
-enum PaymentMethod {
-  CARD
-  MOBILE_BANKING
-}
 
 enum PaymentProvider {
-  STRIPE
   SSLCOMMERZ
 }
 
