@@ -60,3 +60,18 @@ export async function paymentVerifySslcommerz(val_id: string) {
 	const response = await fetch(validationUrl);
 	return await response.json();
 }
+
+export const paymentStatusByTranId = async (tranId: string) => {
+	const params = new URLSearchParams({
+		tran_id: tranId,
+		store_id: config.sslcommerz.storeId ?? "",
+		store_passwd: config.sslcommerz.storePassword ?? "",
+		format: "json",
+	});
+
+	const response = await fetch(
+		`https://sandbox.sslcommerz.com/validator/api/merchantTransIDvalidationAPI.php?${params}`,
+	);
+
+	return response.json();
+};

@@ -5,7 +5,6 @@ import authMiddleware from "../../core/middleware/authentication";
 import { validateData } from "../../core/middleware/validator.middleware";
 import { createPaymentSchema } from "./payment.validator";
 import { paymentController } from "./payment.controller";
-import { config } from "../../config/env";
 const router = Router();
 
 router.post(
@@ -16,6 +15,8 @@ router.post(
 );
 
 router.post("/success", paymentController.verifyPaymentController);
+router.post("/fail", paymentController.failPaymentController);
+// router.post("/cancel", paymentController.verifyPaymentController);
 
 
 export const paymentRouter = router;

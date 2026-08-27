@@ -30,7 +30,22 @@ const verifyPaymentController = catchAsync(
 	},
 );
 
+const failPaymentController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = req.body;
+		const { message, paymentStatus, transactionId } =
+			await paymentService.failPaymentService(data);
+
+		sendResponse(res, {
+			code: 201,
+			message: message,
+			data: { paymentStatus, transactionId },
+		});
+	},
+);
+
 export const paymentController = {
 	createPaymentController,
+	failPaymentController,
 	verifyPaymentController,
 };

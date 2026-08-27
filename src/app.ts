@@ -1,3 +1,4 @@
+// biome-ignore assist/source/organizeImports: <explanation>
 import express, { type Express } from "express";
 import { authRouter } from "./modules/auth/auth.route";
 import AppError from "./core/error/appError";
@@ -14,12 +15,10 @@ const app: Express = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 app.get("/", (_, res) => {
 	res.status(200).send("Hello, World!");
-});
-app.get("/favicon.ico", (_req, res) => {
-	res.status(204).end();
 });
 
 app.use("/api/v1/auth", authRouter);
