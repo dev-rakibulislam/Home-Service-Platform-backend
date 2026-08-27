@@ -235,6 +235,10 @@ const failPaymentService = async (payload: any) => {
 		);
 	}
 
+	if (Number(latestTransaction.amount) !== Number(payment.amount)) {
+		throw new AppError(400, "Payment amount mismatch");
+	}
+
 	const updatedPayment = await prisma.payment.update({
 		where: {
 			id: payment.id,
