@@ -18,6 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (_, res) => {
 	res.status(200).send("Hello, World!");
 });
+app.get("/favicon.ico", (_req, res) => {
+	res.status(204).end();
+});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);

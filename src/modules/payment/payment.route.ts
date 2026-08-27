@@ -15,30 +15,7 @@ router.post(
 	paymentController.createPaymentController,
 );
 
-router.post("/success", async (req, res) => {
-	const { tran_id, val_id } = req.body;
+router.post("/success", paymentController.verifyPaymentController);
 
-	const validationUrl =
-		"https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php" +
-		`?val_id=${val_id}` +
-		`&store_id=${config.sslcommerz.storeId}` +
-		`&store_passwd=${config.sslcommerz.storePassword}` +
-		`&format=json`;
-
-	const response = await fetch(validationUrl);
-	const validation = await response.json();
-	console.log(validation);
-	// const result = await paymentService.success(req.body);
-
-	// sendResponse(res, {
-	// 	code: 200,
-	// 	message: "Payment successful",
-	// 	data: result,
-	// });
-});
-router.post("/ipn", (req, res) => {
-	console.log(req);
-	res.send("nothing");
-});
 
 export const paymentRouter = router;

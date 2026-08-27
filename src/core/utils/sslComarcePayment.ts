@@ -48,3 +48,15 @@ export async function paymentWithSslcommerz(
 	);
 	return { data: await response.json(), transactionId };
 }
+
+export async function paymentVerifySslcommerz(val_id: string) {
+	const validationUrl =
+		"https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php" +
+		`?val_id=${val_id}` +
+		`&store_id=${config.sslcommerz.storeId}` +
+		`&store_passwd=${config.sslcommerz.storePassword}` +
+		`&format=json`;
+
+	const response = await fetch(validationUrl);
+	return await response.json();
+}

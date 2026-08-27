@@ -11,10 +11,11 @@ model Payment {
   status   PaymentStatus   @default(PENDING)
   paidAt   DateTime?
 
-  cardBrand  String?
-  cardType   String?
-  cardIssuer String?
-  riskLevel  String?
+  cardBrand    String?
+  cardType     String?
+  cardIssuer   String?
+  cardCategory String?
+  riskLevel    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

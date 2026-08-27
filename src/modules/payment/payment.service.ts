@@ -1,10 +1,14 @@
 import {
+	BookingStatus,
 	PaymentProvider,
 	PaymentStatus,
 } from "../../../generated/prisma/enums";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
-import { paymentWithSslcommerz } from "../../core/utils/sslComarcePayment";
+import {
+	paymentVerifySslcommerz,
+	paymentWithSslcommerz,
+} from "../../core/utils/sslComarcePayment";
 import type { AuthenticatedUser } from "../../types/auth";
 import type { CreatePaymentPayload } from "./payment.validator";
 
@@ -42,7 +46,7 @@ const createPaymentService = async (
 	});
 
 	// Already paid
-	if (existingPayment?.status === PaymentStatus.COMPLETED) {
+	if (existingPayment?.status === PaymentStatus.PAID) {
 		return {
 			message: "Booking is already paid",
 			paymentUrl: null,
@@ -114,6 +118,80 @@ const createPaymentService = async (
 	};
 };
 
+const verifyPaymentService = async (tran_id: string, val_id: string) => {
+	if (!tran_id || !val_id) {
+		throw new AppError(400, "Invalid payment data");
+	}
+	const payment = await prisma.payment.findUnique({
+		where: {
+			transactionId: tran_id,
+		},
+	});
+
+	if (!payment) {
+		throw new AppError(404, "Payment not found");
+	}
+	const data = await paymentVerifySslcommerz(val_id);
+
+	if (data.status !== "VALID") {
+		throw new AppError(400, "Invalid payment");
+	} else if (data.tran_id !== payment.transactionId) {
+		throw new AppError(400, "Transaction mismatch");
+	} else if (Number(data.amount) !== Number(payment.amount)) {
+		throw new AppError(400, "Payment amount mismatch");
+	}
+
+	const {
+		risk_level,
+		card_brand,
+		card_issuer,
+		card_type,
+		card_category,
+		currency_type,
+		bank_tran_id,
+		val_id: validationId,
+	} = data;
+
+	const transaction = await prisma.$transaction(async (tx) => {
+		await tx.payment.update({
+			where: {
+				id: payment.id,
+			},
+			data: {
+				status: PaymentStatus.PAID,
+				paidAt: new Date(),
+				currency: currency_type,
+				bankTranId: bank_tran_id,
+				validationId,
+				cardBrand: card_brand,
+				cardType: card_type,
+				riskLevel: risk_level,
+				cardCategory: card_category,
+				cardIssuer: card_issuer,
+			},
+		});
+
+		await tx.booking.update({
+			where: {
+				id: payment.bookingId,
+			},
+			data: {
+				status: BookingStatus.IN_PROGRESS,
+			},
+		});
+	});
+	return transaction;
+	/**
+  
+  card_category: 'MOBILE',
+ 
+
+
+
+
+	 */
+};
 export const paymentService = {
 	createPaymentService,
+	verifyPaymentService,
 };

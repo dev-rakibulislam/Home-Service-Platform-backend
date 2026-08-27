@@ -16,6 +16,21 @@ const createPaymentController = catchAsync(
 	},
 );
 
+const verifyPaymentController = catchAsync(
+	async (req: Request, res: Response) => {
+		const { tran_id, val_id } = req.body;
+
+		const result = await paymentService.verifyPaymentService(tran_id, val_id);
+
+		sendResponse(res, {
+			code: 201,
+			message: "result",
+			data: result,
+		});
+	},
+);
+
 export const paymentController = {
 	createPaymentController,
+	verifyPaymentController,
 };
