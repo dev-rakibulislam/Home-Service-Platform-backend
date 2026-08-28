@@ -1,7 +1,6 @@
 export const handlePrismaError = (error: any) => {
 	switch (error.code) {
 		case "P2002": {
-			console.log("mewwwww", error);
 			const constraint =
 				error.meta?.driverAdapterError?.cause?.constraint?.index;
 
@@ -13,7 +12,7 @@ export const handlePrismaError = (error: any) => {
 				errors: [
 					{
 						path: field || "unknown",
-						message: "This value already exists",
+						message: `${field} already exists`,
 					},
 				],
 			};

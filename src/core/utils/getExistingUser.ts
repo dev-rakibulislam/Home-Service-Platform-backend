@@ -1,25 +1,28 @@
+import { Prisma } from "../../../generated/prisma/client";
 import { prisma } from "../../config/prisma";
 
 export type getExistingUserType = { email?: string; id?: string };
 
-export const getExistingUser = async (data: getExistingUserType) => {
+export const getExistingUser = async (
+	payload: getExistingUserType,
+	include?: Prisma.UserInclude,
+) => {
 	const orClauses = [];
 
-	if (data.email) {
+	if (payload.email) {
 		orClauses.push({
-			email: data.email,
+			email: payload.email,
 		});
 	}
-
-	if (data.id) {
+	if (payload.id) {
 		orClauses.push({
-			id: data.id,
+			id: payload.id,
 		});
 	}
+	const where = orClauses.length ? { OR: orClauses } : { id: "" };
 
-	return prisma.user.findFirst({
-		where: {
-			OR: orClauses,
-		},
+	return await prisma.user.findFirst({
+		where,
+		...(include && { include }),
 	});
 };

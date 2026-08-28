@@ -25,6 +25,10 @@ const registerUserController = catchAsync(
 		sendResponse(res, {
 			code: 201,
 			message: "User registered successfully.",
+			data: {
+				accessToken,
+				refreshToken,
+			},
 		});
 	},
 );
@@ -48,6 +52,10 @@ const loginUserController = catchAsync(async (req: Request, res: Response) => {
 	sendResponse(res, {
 		code: 201,
 		message: "User login successfully.",
+		data: {
+			accessToken,
+			refreshToken,
+		},
 	});
 });
 

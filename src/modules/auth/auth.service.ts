@@ -5,15 +5,15 @@ import AppError from "../../core/error/appError";
 import bcrypt from "bcryptjs";
 import { config } from "../../config/env";
 import { prisma } from "../../config/prisma";
-import { UserRole } from "../../../generated/prisma/enums";
 import { generateToken, jwtCookiePayload } from "../../core/utils/jwt";
-import { AuthenticatedUser } from "../../types/auth";
+import type { AuthenticatedUser } from "../../types/auth";
 
 const registerUserInDb = async (payload: UserRegisterPayload) => {
 	const {
 		email,
 		password,
 		name,
+		userName,
 		role,
 		address,
 		bio,
@@ -23,16 +23,41 @@ const registerUserInDb = async (payload: UserRegisterPayload) => {
 		skills,
 	} = payload;
 
-	const existingUserRecord = await getExistingUser(email);
-
+	const existingUserRecord = await getExistingUser(
+		{ email },
+		{
+			technicianProfile: true,
+		},
+	);
 	if (existingUserRecord) {
 		throw new AppError(409, "User already exists with this email");
+	}
+
+	if (role === "TECHNICIAN" && userName) {
+		const existingTechnician = await prisma.technicianProfile.findUnique({
+			where: { userName },
+		});
+
+		if (existingTechnician) {
+			throw new AppError(409, "Username has already been taken");
+		}
 	}
 
 	const hashedPassword = await bcrypt.hash(
 		password,
 		Number(config.bcrypt_salt_rounds),
 	);
+
+	const technicianProfileData =
+		role === "TECHNICIAN"
+			? {
+					bio: bio ?? "",
+					skills: skills ?? [],
+					hourlyRate: hourlyRate ?? 0,
+					experienceYears: experienceYears ?? 0,
+					userName: userName ?? "",
+				}
+			: undefined;
 
 	const result = await prisma.user.create({
 		data: {
@@ -43,14 +68,9 @@ const registerUserInDb = async (payload: UserRegisterPayload) => {
 			phoneNumber,
 			role,
 
-			...(role === "TECHNICIAN" && {
+			...(technicianProfileData && {
 				technicianProfile: {
-					create: {
-						bio: bio!,
-						skills: skills!,
-						hourlyRate: hourlyRate!,
-						experienceYears: experienceYears!,
-					},
+					create: technicianProfileData,
 				},
 			}),
 		},
@@ -80,8 +100,8 @@ const registerUserInDb = async (payload: UserRegisterPayload) => {
 };
 
 const loginUserInDb = async (payload: UserLoginPayload) => {
-	const existingUserRecord = await getExistingUser(payload.email);
-	console.log(existingUserRecord);
+	const existingUserRecord = await getExistingUser({ email: payload.email });
+
 	if (existingUserRecord === null) {
 		throw new AppError(409, "user not found. Please register");
 	}
