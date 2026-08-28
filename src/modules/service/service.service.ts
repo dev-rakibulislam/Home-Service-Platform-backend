@@ -1,7 +1,7 @@
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
-import { AuthenticatedUser } from "../../types/auth";
-import { createServiceSchema } from "./service.validation";
+import type{ AuthenticatedUser } from "../../types/auth";
+import type{ createServiceSchema } from "./service.validation";
 
 const createService = async (
 	payload: createServiceSchema,
@@ -40,6 +40,14 @@ const createService = async (
 	return result;
 };
 
+const getAllService = async (filter: any) => {
+	const data = await prisma.service.findMany({
+		where: {},
+	});
+	return data
+};
+
 export const ServicesService = {
 	createService,
+	getAllService,
 };

@@ -5,7 +5,7 @@ import { ServicesService } from "./service.service";
 
 const createServiceController = catchAsync(
 	async (req: Request, res: Response) => {
-		const data = await ServicesService.createService(req.body,req.user);
+		const data = await ServicesService.createService(req.body, req.user);
 
 		sendResponse(res, {
 			code: 201,
@@ -15,6 +15,18 @@ const createServiceController = catchAsync(
 	},
 );
 
+const getServiceController = catchAsync(async (req: Request, res: Response) => {
+	//filter needed
+	const data = await ServicesService.getAllService(req.body);
+
+	sendResponse(res, {
+		code: 201,
+		message: "all service get successfully.",
+		data,
+	});
+});
+
 export const serviceController = {
 	createServiceController,
+	getServiceController,
 };

@@ -47,6 +47,18 @@ const createAvailabilityService = async (
 
 	return result;
 };
+
+const getAvailableTechnicianService = async () => {
+	const data = await prisma.technicianProfile.findMany({
+		where: {
+			isAvailable: true,
+		},
+		omit: { createdAt: true, updatedAt: true, isAvailable: true },
+	});
+	return data;
+};
+
 export const technicianService = {
 	createAvailabilityService,
+	getAvailableTechnicianService,
 };

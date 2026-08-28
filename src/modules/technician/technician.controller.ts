@@ -9,7 +9,6 @@ const createAvailabilityController = catchAsync(
 			req.body,
 			req.user,
 		);
-
 		sendResponse(res, {
 			code: 201,
 			message: "service created successfully.",
@@ -18,6 +17,20 @@ const createAvailabilityController = catchAsync(
 	},
 );
 
+const getAvailableTechnicianController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await technicianService.getAvailableTechnicianService(
+			
+		);
+		sendResponse(res, {
+			code: 201,
+			message: "all available technician find successfully.",
+			data,
+		});
+	},
+);
+
 export const technicianController = {
 	createAvailabilityController,
+	getAvailableTechnicianController,
 };

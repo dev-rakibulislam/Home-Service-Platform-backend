@@ -128,14 +128,14 @@ const loginUserInDb = async (payload: UserLoginPayload) => {
 };
 
 const getProfileFromDb = async (payload: AuthenticatedUser) => {
-	const getProfle = await prisma.user.findUnique({
+	const getProfile = await prisma.user.findUnique({
 		where: {
 			...payload,
 		},
 		omit: { password: true },
 		include: { technicianProfile: true },
 	});
-	return getProfle;
+	return getProfile;
 };
 
 export const authService = {

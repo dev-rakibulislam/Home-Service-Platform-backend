@@ -10,9 +10,9 @@ const router = Router();
 router.post(
 	"/",
 	authMiddleware(UserRole.TECHNICIAN),
-  validateData(createServiceSchema),
+	validateData(createServiceSchema),
 	serviceController.createServiceController,
 );
-
+router.get("/", serviceController.getServiceController);
 
 export const serviceRouter = router;

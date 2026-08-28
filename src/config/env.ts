@@ -36,15 +36,32 @@ export const config = {
 		jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
 	},
 	sslcommerz: {
-		sandboxApiUrl:process.env.Sandbox_API_URL,
-		liveApiUrl:process.env.Live_API_URL,
+		sandboxApiUrl: process.env.Sandbox_API_URL,
+		liveApiUrl: process.env.Live_API_URL,
 		storeId: process.env.store_id,
 		storePassword: process.env.store_passwd,
 		isLive: process.env.is_live,
 		successUrl: process.env.success_url,
 		failUrl: process.env.fail_url,
 		cancelUrl: process.env.cancel_url,
-		ipnUrl: process.env.ipn_url
+		ipnUrl: process.env.ipn_url,
+	},
+	seed: {
+		admin: {
+			defaultAdminName: process.env.default_admin_name,
+			defaultAdminEmail: process.env.default_admin_email,
+			defaultAdminPassword: process.env.default_admin_password,
+		},
+		technician: {
+			defaultTechnicianName: process.env.default_technician_name,
+			defaultTechnicianEmail: process.env.default_technician_email,
+			defaultTechnicianPassword: process.env.default_technician_password,
+		},
+		customer: {
+			defaultCustomerName: process.env.default_customer_name,
+			defaultCustomerEmail: process.env.default_customer_email,
+			defaultCustomerPassword: process.env.default_customer_password,
+		},
 	},
 };
 console.log(config);

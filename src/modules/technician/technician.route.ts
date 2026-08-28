@@ -13,5 +13,10 @@ router.post(
 	validateData(createAvailabilitySchema),
 	technicianController.createAvailabilityController,
 );
+router.get(
+	"/",
+//! fintering 
+	technicianController.getAvailableTechnicianController,
+);
 
 export const technicianRouter = router;
