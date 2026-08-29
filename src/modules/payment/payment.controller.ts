@@ -44,10 +44,23 @@ const failPaymentController = catchAsync(
 	},
 );
 
+const getSinglePaymentController = catchAsync(
+	async (req: Request, res: Response) => {
+		const payment = await paymentService.getSinglePaymentService(
+			req.params.id as string,
+		);
 
+		sendResponse(res, {
+			code: 200,
+			message: payment.message,
+			data: payment.data,
+		});
+	},
+);
 
 export const paymentController = {
 	createPaymentController,
 	failPaymentController,
 	verifyPaymentController,
+	getSinglePaymentController,
 };

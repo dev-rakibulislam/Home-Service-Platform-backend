@@ -17,4 +17,10 @@ router.post(
 router.post("/success", paymentController.verifyPaymentController);
 router.post("/fail", paymentController.failPaymentController);
 
+router.get(
+	"/:id",
+	authMiddleware(UserRole.CUSTOMER),
+	paymentController.getSinglePaymentController,
+);
+
 export const paymentRouter = router;

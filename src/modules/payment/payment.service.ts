@@ -260,10 +260,17 @@ const failPaymentService = async (payload: any) => {
 	};
 };
 
-
+const getSinglePaymentService = async (id: string) => {
+	const data = await prisma.payment.findUnique({ where: { id } });
+	if (!data) {
+		return { message: "payment not found", data: null };
+	}
+	return { message: "payment found successfully", data };
+};
 
 export const paymentService = {
 	createPaymentService,
 	failPaymentService,
 	verifyPaymentService,
+	getSinglePaymentService,
 };
