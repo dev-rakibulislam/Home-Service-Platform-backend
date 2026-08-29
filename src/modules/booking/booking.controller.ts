@@ -32,7 +32,9 @@ const getAllBookingController = catchAsync(
 
 const getSingleBookingController = catchAsync(
 	async (req: Request, res: Response) => {
-		const data = await bookingService.getSingleBookingService(req.params.id as string);
+		const data = await bookingService.getSingleBookingService(
+			req.params.id as string,
+		);
 
 		sendResponse(res, {
 			code: 200,
@@ -42,7 +44,23 @@ const getSingleBookingController = catchAsync(
 	},
 );
 
+const cancelBookingController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await bookingService.cancelBookingService(
+			req.params.id as string,
+		);
+
+		sendResponse(res, {
+			code: 200,
+			message: "booking canceled successfully.",
+			data,
+		});
+	},
+);
+
 export const bookingController = {
 	createBookingController,
-	getAllBookingController,getSingleBookingController
+	getAllBookingController,
+	getSingleBookingController,
+	cancelBookingController,
 };

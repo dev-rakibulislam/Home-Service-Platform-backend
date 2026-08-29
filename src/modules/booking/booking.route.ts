@@ -26,10 +26,10 @@ router.get(
 	bookingController.getAllBookingController,
 );
 
-router.get(
-	"/",
+router.post(
+	"/cancel/:id",
 	authMiddleware(UserRole.CUSTOMER),
-	bookingController.getAllBookingController,
+	bookingController.cancelBookingController,
 );
 
 export const bookingRouter = router;

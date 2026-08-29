@@ -1,4 +1,4 @@
-import { DayOfWeek } from "../../../generated/prisma/enums";
+import { BookingStatus, DayOfWeek } from "../../../generated/prisma/enums";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
 import type { AuthenticatedUser } from "../../types/auth";
@@ -102,8 +102,29 @@ const getSingleBookingService = async (id: string) => {
 	return data;
 };
 
+const cancelBookingService = async (id: string) => {
+	const data = await prisma.booking.findUnique({
+		where: { id },
+	});
+	if (!data) {
+		throw new AppError(400, "Booking not found");
+	}
+	if (data.status === BookingStatus.IN_PROGRESS) {
+		throw new AppError(
+			400,
+			"Cannot cancel a booking that is already in progress",
+		);
+	}
+	if (data.status === BookingStatus.COMPLETED) {
+		throw new AppError(400, "Cannot cancel a completed booking");
+	}
+
+	return data;
+};
+
 export const bookingService = {
 	createAvailabilityService,
 	getMyService,
 	getSingleBookingService,
+	cancelBookingService,
 };
