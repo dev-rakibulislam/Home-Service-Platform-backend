@@ -10,6 +10,7 @@ import { serviceRouter } from "./modules/service/service.route";
 import { technicianRouter } from "./modules/technician/technician.route";
 import { bookingRouter } from "./modules/booking/booking.route";
 import { paymentRouter } from "./modules/payment/payment.route";
+import { reviewRouter } from "./modules/review/review.route";
 const app: Express = express();
 
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use("/api/v1/technician", technicianRouter);
 app.use("/api/v1/booking", bookingRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/services", serviceRouter);
+app.use("/api/v1/review", reviewRouter);
 
 app.use(globalErrorHandler);
 

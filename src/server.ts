@@ -11,7 +11,7 @@ async function startServer() {
 		console.log("database connected successfully.");
 		await seedIntoDB()
 		app.listen(config.port, () => {
-			console.log(`running on ${config.port}`);
+			console.log(`running on => http://127.0.0.1:${config.port}`);
 		});
 	} catch (error) {
 		await prisma.$disconnect()

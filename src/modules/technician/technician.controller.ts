@@ -21,7 +21,7 @@ const getAvailableTechnicianController = catchAsync(
 	async (req: Request, res: Response) => {
 		const data = await technicianService.getAvailableTechnicianService();
 		sendResponse(res, {
-			code: 201,
+			code: 200,
 			message: "all available technician find successfully.",
 			data,
 		});
@@ -34,7 +34,7 @@ const getAvailableTechnicianDetailsController = catchAsync(
 			req.params.id as string,
 		);
 		sendResponse(res, {
-			code: 201,
+			code: 200,
 			message: "Technician details found.",
 			data,
 		});

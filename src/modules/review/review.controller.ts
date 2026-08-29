@@ -1,70 +1,24 @@
 // biome-ignore assist/source/organizeImports: <explanation>
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
+import { catchAsync } from "../../core/utils/catchAsync";
+import { sendResponse } from "../../core/utils/response";
+import { reviewService } from "./review.service";
 
-const createReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // TODO
-  } catch (error) {
-    next(error);
-  }
-};
+const createReviewController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await reviewService.createReviewService(
+			req.params.id as string,
+			req.user,
+			req.body,
+		);
 
-const getReviews = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // TODO
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // TODO
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // TODO
-  } catch (error) {
-    next(error);
-  }
-};
-
-const deleteReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    // TODO
-  } catch (error) {
-    next(error);
-  }
-};
-
+		sendResponse(res, {
+			code: 201,
+			message: "Review created successfully.",
+			data,
+		});
+	},
+);
 export const reviewController = {
-  createReview,
-  getReviews,
-  getReview,
-  updateReview,
-  deleteReview,
+	createReviewController,
 };

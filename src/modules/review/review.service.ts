@@ -1,27 +1,55 @@
-const createReview = async () => {
-  // TODO
-};
+import { BookingStatus } from "../../../generated/prisma/enums";
+import { prisma } from "../../config/prisma";
+import AppError from "../../core/error/appError";
+import type { AuthenticatedUser } from "../../types/auth";
+import type { CreateReviewPayload } from "./review.validation";
 
-const getReviews = async () => {
-  // TODO
-};
+const createReviewService = async (
+	bookingId: string,
+	user: AuthenticatedUser,
+	payload: CreateReviewPayload,
+) => {
+	const booking = await prisma.booking.findUnique({
+		where: {
+			id: bookingId,
+		},
+		include: {
+			review: true,
+		},
+	});
+	if (!booking) {
+		throw new AppError(404, "Booking not found");
+	}
 
-const getReview = async () => {
-  // TODO
-};
+	// Only booking owner can review
+	if (booking.customerId !== user.id) {
+		throw new AppError(403, "You are not authorized to review this booking");
+	}
 
-const updateReview = async () => {
-  // TODO
-};
+	// Booking must be completed
+	if (booking.status !== BookingStatus.COMPLETED) {
+		throw new AppError(
+			400,
+			"Review can only be given after booking is completed",
+		);
+	}
 
-const deleteReview = async () => {
-  // TODO
+	// One booking = one review
+	if (booking.review) {
+		throw new AppError(409, "You already reviewed this booking");
+	}
+
+	const result = await prisma.review.create({
+		data: {
+			bookingId,
+			rating: payload.rating,
+			comment: payload.comment,
+		},
+	});
+
+	return result;
 };
 
 export const reviewService = {
-  createReview,
-  getReviews,
-  getReview,
-  updateReview,
-  deleteReview,
+	createReviewService,
 };
