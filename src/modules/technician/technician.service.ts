@@ -1,6 +1,7 @@
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
 import type { AuthenticatedUser } from "../../types/auth";
+import { technicianProfileUpdateSchemaPayload } from "../auth/auth.validator";
 import type { CreateAvailabilityPayload } from "./technician.validator";
 
 const createAvailabilityService = async (
@@ -73,8 +74,26 @@ const getAvailableTechnicianDetailsService = async (id: string) => {
 	return data;
 };
 
+const updateMyProfileService = async (
+	data: technicianProfileUpdateSchemaPayload,
+	user: AuthenticatedUser,
+) => {
+	const { bio, experienceYears, hourlyRate, skills } = data;
+	const result = await prisma.technicianProfile.update({
+		where: { userId: user.id },
+		data: {
+			bio,
+			experienceYears,
+			hourlyRate,
+			skills,
+		},
+	});
+	return result;
+};
+
 export const technicianService = {
 	createAvailabilityService,
 	getAvailableTechnicianService,
 	getAvailableTechnicianDetailsService,
+	updateMyProfileService,
 };

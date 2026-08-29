@@ -41,8 +41,23 @@ const getAvailableTechnicianDetailsController = catchAsync(
 	},
 );
 
+const updateMyProfileController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await technicianService.updateMyProfileService(
+			req.body,
+			req.user,
+		);
+		sendResponse(res, {
+			code: 201,
+			message: "Profile updated successfully.",
+			data,
+		});
+	},
+);
+
 export const technicianController = {
 	createAvailabilityController,
 	getAvailableTechnicianController,
 	getAvailableTechnicianDetailsController,
+	updateMyProfileController,
 };

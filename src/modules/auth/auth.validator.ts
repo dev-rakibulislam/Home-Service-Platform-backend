@@ -115,5 +115,27 @@ export const userRegisterSchema = userLoginSchema
 		}
 	});
 
+export const technicianProfileUpdateSchema = z.object({
+	bio: z
+		.string()
+		.trim()
+		.min(10, "Bio must be at least 10 characters long")
+		.max(500, "Bio must be less than 500 characters long")
+		.optional(),
+
+	hourlyRate: z.coerce
+		.number()
+		.min(1, "Hourly rate must be at least 1")
+		.max(99999999.99, "Hourly rate is too high")
+		.optional(),
+
+	experienceYears: z
+		.number()
+		.min(0, "Years of experience must be at least 0")
+		.max(100, "Years of experience must be less than 100")
+		.optional(),
+	skills: z.string().array().optional(),
+});
 export type UserLoginPayload = z.infer<typeof userLoginSchema>;
 export type UserRegisterPayload = z.infer<typeof userRegisterSchema>;
+export type technicianProfileUpdateSchemaPayload = z.infer<typeof technicianProfileUpdateSchema>;
