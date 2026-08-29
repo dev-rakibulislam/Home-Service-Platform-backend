@@ -57,8 +57,24 @@ const getAvailableTechnicianService = async () => {
 	});
 	return data;
 };
+const getAvailableTechnicianDetailsService = async (id: string) => {
+	const data = await prisma.technicianProfile.findUnique({
+		where: { id },
+		omit: { createdAt: true, updatedAt: true },
+		include: {
+			services: {
+				omit: { createdAt: true, updatedAt: true },
+			},
+		},
+	});
+	if (!data) {
+		throw new AppError(404, `technician not found with this id: ${id}`);
+	}
+	return data;
+};
 
 export const technicianService = {
 	createAvailabilityService,
 	getAvailableTechnicianService,
+	getAvailableTechnicianDetailsService,
 };

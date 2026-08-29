@@ -79,6 +79,31 @@ const createAvailabilityService = async (
 
 	return result;
 };
+
+const getMyService = async (user: AuthenticatedUser) => {
+	const data = await prisma.booking.findMany({
+		where: { customerId: user.id },
+		include: {
+			technician: {},
+			service: {},
+			payments: { select: { status: true } },
+		},
+	});
+	return data;
+};
+
+const getSingleBookingService = async (id: string) => {
+	const data = await prisma.booking.findUnique({
+		where: { id },
+	});
+	if (!data) {
+		throw new AppError(400, "booking not found");
+	}
+	return data;
+};
+
 export const bookingService = {
 	createAvailabilityService,
+	getMyService,
+	getSingleBookingService,
 };

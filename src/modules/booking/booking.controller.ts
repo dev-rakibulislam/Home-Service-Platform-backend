@@ -18,6 +18,31 @@ const createBookingController = catchAsync(
 	},
 );
 
+const getAllBookingController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await bookingService.getMyService(req.user);
+
+		sendResponse(res, {
+			code: 200,
+			message: "booking found successfully.",
+			data,
+		});
+	},
+);
+
+const getSingleBookingController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await bookingService.getSingleBookingService(req.params.id as string);
+
+		sendResponse(res, {
+			code: 200,
+			message: "booking found successfully.",
+			data,
+		});
+	},
+);
+
 export const bookingController = {
 	createBookingController,
+	getAllBookingController,getSingleBookingController
 };

@@ -18,5 +18,9 @@ router.get(
 //! fintering 
 	technicianController.getAvailableTechnicianController,
 );
+router.get(
+	"/:id",
+	technicianController.getAvailableTechnicianDetailsController,
+);
 
 export const technicianRouter = router;
