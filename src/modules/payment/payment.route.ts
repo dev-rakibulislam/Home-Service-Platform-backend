@@ -16,7 +16,5 @@ router.post(
 
 router.post("/success", paymentController.verifyPaymentController);
 router.post("/fail", paymentController.failPaymentController);
-// router.post("/cancel", paymentController.verifyPaymentController);
-
 
 export const paymentRouter = router;

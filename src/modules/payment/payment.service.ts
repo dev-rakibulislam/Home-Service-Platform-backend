@@ -13,6 +13,11 @@ import {
 import type { AuthenticatedUser } from "../../types/auth";
 import type { CreatePaymentPayload } from "./payment.validator";
 
+interface CancelBookingPayload {
+	bookingId?: string;
+	userId?: string; // Optional: Pass to ensure users can only cancel their own bookings
+}
+
 const createPaymentService = async (
 	payload: CreatePaymentPayload,
 	userData: AuthenticatedUser,
@@ -254,6 +259,8 @@ const failPaymentService = async (payload: any) => {
 		transactionId: updatedPayment.transactionId,
 	};
 };
+
+
 
 export const paymentService = {
 	createPaymentService,
