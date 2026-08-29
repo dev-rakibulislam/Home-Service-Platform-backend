@@ -17,10 +17,9 @@ router.post(
 
 router.get(
 	"/",
-//! fintering 
+	//! fintering
 	technicianController.getAvailableTechnicianController,
 );
-
 
 router.put(
 	"/update-profile",
@@ -30,8 +29,15 @@ router.put(
 );
 
 router.get(
+	"/pending-booking",
+	authMiddleware(UserRole.TECHNICIAN),
+
+	technicianController.getPendingBookingController,
+);
+
+// always last
+router.get(
 	"/:id",
 	technicianController.getAvailableTechnicianDetailsController,
 );
-
 export const technicianRouter = router;

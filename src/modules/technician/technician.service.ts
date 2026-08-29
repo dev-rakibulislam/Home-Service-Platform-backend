@@ -1,7 +1,11 @@
+import { BookingStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
 import type { AuthenticatedUser } from "../../types/auth";
-import { technicianProfileUpdateSchemaPayload } from "../auth/auth.validator";
+import {
+	technicianProfileUpdateSchemaPayload,
+	UserRegisterPayload,
+} from "../auth/auth.validator";
 import type { CreateAvailabilityPayload } from "./technician.validator";
 
 const createAvailabilityService = async (
@@ -58,6 +62,7 @@ const getAvailableTechnicianService = async () => {
 	});
 	return data;
 };
+
 const getAvailableTechnicianDetailsService = async (id: string) => {
 	const data = await prisma.technicianProfile.findUnique({
 		where: { id },
@@ -91,9 +96,23 @@ const updateMyProfileService = async (
 	return result;
 };
 
+const getPendingBookingService = async (user: AuthenticatedUser) => {
+	console.log("data");
+	const data = await prisma.booking.findMany({
+		where: {
+			status: BookingStatus.PENDING,
+		},
+	});
+	if (!data) {
+		throw new AppError(400, "Pending Booking not found");
+	}
+	return data;
+};
+
 export const technicianService = {
 	createAvailabilityService,
 	getAvailableTechnicianService,
 	getAvailableTechnicianDetailsService,
 	updateMyProfileService,
+	getPendingBookingService,
 };

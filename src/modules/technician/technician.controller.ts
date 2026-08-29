@@ -55,9 +55,22 @@ const updateMyProfileController = catchAsync(
 	},
 );
 
+const getPendingBookingController = catchAsync(
+	async (req: Request, res: Response) => {
+		console.log("first")
+		const data = await technicianService.getPendingBookingService(req.user);
+		sendResponse(res, {
+			code: 200,
+			message: "Pending Booking get successfully.",
+			data,
+		});
+	},
+);
+
 export const technicianController = {
 	createAvailabilityController,
 	getAvailableTechnicianController,
 	getAvailableTechnicianDetailsController,
 	updateMyProfileController,
+	getPendingBookingController,
 };
