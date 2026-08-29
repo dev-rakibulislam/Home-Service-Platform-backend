@@ -3,7 +3,10 @@ import { Router } from "express";
 import { UserRole } from "../../../generated/prisma/enums";
 import authMiddleware from "../../core/middleware/authentication";
 import { validateData } from "../../core/middleware/validator.middleware";
-import { createAvailabilitySchema } from "./technician.validator";
+import {
+	createAvailabilitySchema,
+	updateBookingSchema,
+} from "./technician.validator";
 import { technicianController } from "./technician.controller";
 import { technicianProfileUpdateSchema } from "../auth/auth.validator";
 const router = Router();
@@ -33,6 +36,12 @@ router.get(
 	authMiddleware(UserRole.TECHNICIAN),
 
 	technicianController.getPendingBookingController,
+);
+router.post(
+	"/update-booking/:id",
+	authMiddleware(UserRole.TECHNICIAN),
+	validateData(updateBookingSchema),
+	technicianController.getUpdatePendingBookingController,
 );
 
 // always last

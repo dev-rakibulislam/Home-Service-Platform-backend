@@ -6,7 +6,10 @@ import {
 	technicianProfileUpdateSchemaPayload,
 	UserRegisterPayload,
 } from "../auth/auth.validator";
-import type { CreateAvailabilityPayload } from "./technician.validator";
+import type {
+	CreateAvailabilityPayload,
+	updateBookingPayload,
+} from "./technician.validator";
 
 const createAvailabilityService = async (
 	payload: CreateAvailabilityPayload,
@@ -109,10 +112,37 @@ const getPendingBookingService = async (user: AuthenticatedUser) => {
 	return data;
 };
 
+const getUpdatePendingBookingService = async (
+	id: string,
+	payload: updateBookingPayload,
+) => {
+	const existingBooking = await prisma.booking.findUnique({ where: { id } });
+	if (!existingBooking) {
+		throw new AppError(400, "No booking found");
+	}
+	if (existingBooking.status === BookingStatus.COMPLETED) {
+		throw new AppError(400, "Booking  already Completed!");
+	}
+	const data = await prisma.booking.update({
+		where: {
+			id,
+		},
+		data: {
+			status: payload.status,
+		},
+	});
+	if (!data) {
+		throw new AppError(400, "Pending Booking not found");
+	}
+
+	return data;
+};
+
 export const technicianService = {
 	createAvailabilityService,
 	getAvailableTechnicianService,
 	getAvailableTechnicianDetailsService,
 	updateMyProfileService,
 	getPendingBookingService,
+	getUpdatePendingBookingService,
 };

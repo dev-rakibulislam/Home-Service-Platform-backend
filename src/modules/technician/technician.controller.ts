@@ -57,11 +57,25 @@ const updateMyProfileController = catchAsync(
 
 const getPendingBookingController = catchAsync(
 	async (req: Request, res: Response) => {
-		console.log("first")
+		console.log("first");
 		const data = await technicianService.getPendingBookingService(req.user);
 		sendResponse(res, {
 			code: 200,
 			message: "Pending Booking get successfully.",
+			data,
+		});
+	},
+);
+
+const getUpdatePendingBookingController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await technicianService.getUpdatePendingBookingService(
+			req.params.id as string,
+			req.body,
+		);
+		sendResponse(res, {
+			code: 200,
+			message: "Pending Booking updated successfully.",
 			data,
 		});
 	},
@@ -73,4 +87,5 @@ export const technicianController = {
 	getAvailableTechnicianDetailsController,
 	updateMyProfileController,
 	getPendingBookingController,
+	getUpdatePendingBookingController,
 };
