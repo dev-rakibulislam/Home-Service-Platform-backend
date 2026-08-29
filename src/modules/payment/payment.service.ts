@@ -268,9 +268,20 @@ const getSinglePaymentService = async (id: string) => {
 	return { message: "payment found successfully", data };
 };
 
+const getMyPaymentService = async (id: string) => {
+	const data = await prisma.payment.findMany({ where: { id } });
+
+	if (!data) {
+		return { message: "payment not found", data: null };
+	}
+	console.log(data);
+	return { message: "payment found successfully", data };
+};
+
 export const paymentService = {
 	createPaymentService,
 	failPaymentService,
 	verifyPaymentService,
 	getSinglePaymentService,
+	getMyPaymentService,
 };

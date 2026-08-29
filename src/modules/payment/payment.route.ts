@@ -18,6 +18,12 @@ router.post("/success", paymentController.verifyPaymentController);
 router.post("/fail", paymentController.failPaymentController);
 
 router.get(
+	"/",
+	authMiddleware(UserRole.CUSTOMER),
+	paymentController.getMyPaymentPaymentController,
+);
+
+router.get(
 	"/:id",
 	authMiddleware(UserRole.CUSTOMER),
 	paymentController.getSinglePaymentController,
