@@ -13,6 +13,7 @@ router.post(
 	validateData(createServiceSchema),
 	serviceController.createServiceController,
 );
+
 router.get("/", serviceController.getServiceController);
 
 export const serviceRouter = router;

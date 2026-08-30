@@ -1,7 +1,8 @@
+import { Prisma } from "../../../generated/prisma/browser";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
-import type{ AuthenticatedUser } from "../../types/auth";
-import type{ createServiceSchema } from "./service.validation";
+import type { AuthenticatedUser } from "../../types/auth";
+import type { createServiceSchema } from "./service.validation";
 
 const createService = async (
 	payload: createServiceSchema,
@@ -40,11 +41,54 @@ const createService = async (
 	return result;
 };
 
-const getAllService = async (filter: any) => {
+const getAllService = async (filters: {
+	category?: string;
+	location?: string;
+	minRating?: number;
+	maxPrice?: number;
+}) => {
+	console.log(filters);
+	const where: Prisma.ServiceWhereInput = { isActive: true };
+
+	if (filters.category) {
+		where.category = {
+			is: {
+				name: { contains: filters.category, mode: "insensitive" },
+			},
+		};
+	}
+	if (filters.maxPrice !== undefined) {
+		where.price = { lte: filters.maxPrice };
+	}
+
+	const technicianProfile: Prisma.TechnicianProfileWhereInput = {};
+	if (filters.location) {
+		technicianProfile.OR = [
+			{
+				user: { address: { contains: filters.location, mode: "insensitive" } },
+			},
+		];
+	}
+
+	if (filters.minRating !== undefined) {
+		technicianProfile.avgRating = { gte: filters.minRating };
+	}
+	if (filters.location || filters.minRating !== undefined) {
+		where.technician = technicianProfile;
+	}
+
 	const data = await prisma.service.findMany({
-		where: {},
+		where,
+		include: {
+			category: true,
+			technician: {
+				include: {
+					user: { select: { id: true, name: true, address: true } },
+				},
+			},
+		},
 	});
-	return data
+	return data;
 };
 
 export const ServicesService = {

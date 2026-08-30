@@ -16,11 +16,16 @@ const createServiceController = catchAsync(
 );
 
 const getServiceController = catchAsync(async (req: Request, res: Response) => {
-	//filter needed
-	const data = await ServicesService.getAllService(req.body);
+	const q = req.query;
 
+	const data = await ServicesService.getAllService({
+		category: typeof q.category === "string" ? q.category : undefined,
+		location: typeof q.location === "string" ? q.location : undefined,
+		minRating: q.minRating ? Number(q.minRating) : undefined,
+		maxPrice: q.maxPrice ? Number(q.maxPrice) : undefined,
+	});
 	sendResponse(res, {
-		code: 201,
+		code: 200,
 		message: "all service get successfully.",
 		data,
 	});

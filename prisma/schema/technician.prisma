@@ -1,16 +1,16 @@
 model TechnicianProfile {
-  id              String           @id @default(uuid())
-  userId          String           @unique
-  userName        String?          @unique @db.VarChar(100)
-  bio             String           @db.VarChar(150)
-  skills          String[]
-  experienceYears Int
-  hourlyRate      Decimal          @db.Decimal(10, 2)
-  isAvailable     Boolean          @default(true)
-  status          TechnicianStatus @default(ACTIVE)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-
+  id                String             @id @default(uuid())
+  userId            String             @unique
+  userName          String?            @unique @db.VarChar(100)
+  bio               String             @db.VarChar(150)
+  skills            String[]
+  experienceYears   Int
+  hourlyRate        Decimal            @db.Decimal(10, 2)
+  isAvailable       Boolean            @default(true)
+  status            TechnicianStatus   @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  avgRating         Decimal?           @db.Decimal(3, 2)
   user              User               @relation(fields: [userId], references: [id])
   services          Service[]
   availabilitySlots AvailabilitySlot[]
