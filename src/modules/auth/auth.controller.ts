@@ -61,7 +61,7 @@ const loginUserController = catchAsync(async (req: Request, res: Response) => {
 
 const getMyProfileController = catchAsync(
 	async (req: Request, res: Response) => {
-		console.log(req.user)
+		
 		const data = await authService.getProfileFromDb(req.user);
 		sendResponse(res, {
 			code: 201,

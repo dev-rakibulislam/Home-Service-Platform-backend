@@ -19,7 +19,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.get("/", (_, res) => {
-	res.status(200).send("Hello, World!");
+	res
+		.status(200)
+		.send({
+			message: "Hello, World!",
+			apiDocumentation:
+				"https://documenter.getpostman.com/view/45059890/2sBYAsysNh",
+		});
 });
 
 app.use("/api/v1/auth", authRouter);

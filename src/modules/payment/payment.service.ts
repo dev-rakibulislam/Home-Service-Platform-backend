@@ -274,7 +274,6 @@ const getMyPaymentService = async (id: string) => {
 	if (!data) {
 		return { message: "payment not found", data: null };
 	}
-	console.log(data);
 	return { message: "payment found successfully", data };
 };
 

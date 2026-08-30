@@ -47,7 +47,6 @@ const getAllService = async (filters: {
 	minRating?: number;
 	maxPrice?: number;
 }) => {
-	console.log(filters);
 	const where: Prisma.ServiceWhereInput = { isActive: true };
 
 	if (filters.category) {

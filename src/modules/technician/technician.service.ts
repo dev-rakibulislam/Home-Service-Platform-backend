@@ -141,7 +141,7 @@ const updateMyProfileService = async (
 };
 
 const getPendingBookingService = async (user: AuthenticatedUser) => {
-	console.log("data");
+
 	const data = await prisma.booking.findMany({
 		where: {
 			status: BookingStatus.PENDING,
