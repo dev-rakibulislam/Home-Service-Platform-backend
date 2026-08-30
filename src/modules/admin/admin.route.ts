@@ -20,10 +20,11 @@ router.patch(
 	adminController.updateUserController,
 );
 
-// router.get(
-// 	"/bookings",
-// 	authMiddleware("ADMIN"),
-// 	categoryController.getAllCategoryController,
-// );
+router.get(
+	"/bookings",
+	authMiddleware(UserRole.ADMIN),
+	adminController.getBookingController,
+);
+
 
 export const adminRouter = router;

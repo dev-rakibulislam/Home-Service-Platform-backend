@@ -15,5 +15,11 @@ model Booking {
   payments   Payment[]
   review     Review?
 
+  @@index([status])
+  @@index([customerId])
+  @@index([technicianId])
+  @@index([serviceId])
+  @@index([bookingDate])
+  @@index([createdAt])
   @@map("bookings")
 }

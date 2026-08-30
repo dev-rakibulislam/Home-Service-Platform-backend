@@ -10,7 +10,6 @@ const router = Router();
 
 router.get(
 	"/",
-	authMiddleware(UserRole.ADMIN),
 	categoryController.getAllCategoryController,
 );
 

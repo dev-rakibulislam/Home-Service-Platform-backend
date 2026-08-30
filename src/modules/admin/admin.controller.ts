@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { catchAsync } from "../../core/utils/catchAsync";
 import { sendResponse } from "../../core/utils/response";
 import { categoryService } from "./admin.service";
+import { BookingStatus } from "../../../generated/prisma/enums";
 
 const getAllUserController = catchAsync(async (_: Request, res: Response) => {
 	sendResponse(res, {
@@ -30,8 +31,31 @@ const updateUserController = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getBookingController = catchAsync(async (req: Request, res: Response) => {
+	const filters = {
+		status: req.query.status as BookingStatus | undefined,
+		customerId: req.query.customerId as string | undefined,
+		technicianId: req.query.technicianId as string | undefined,
+		page: req.query.page ? Number(req.query.page) : 1,
+		limit: req.query.limit ? Number(req.query.limit) : 20,
+		fromDate: req.query.fromDate
+			? new Date(req.query.fromDate as string)
+			: undefined,
+
+		toDate: req.query.toDate ? new Date(req.query.toDate as string) : undefined,
+	};
+
+	const { data, metaData } = await categoryService.getBookingsService(filters);
+	sendResponse(res, {
+		code: 200,
+		message: "Booking fetch successfully.",
+		data,
+		metaData,
+	});
+});
 
 export const adminController = {
 	getAllUserController,
 	updateUserController,
+	getBookingController,
 };
