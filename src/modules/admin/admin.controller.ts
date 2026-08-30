@@ -54,8 +54,20 @@ const getBookingController = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getCategoryController = catchAsync(
+	async (req: Request, res: Response) => {
+		const data = await categoryService.getCategoryService();
+		sendResponse(res, {
+			code: 200,
+			message: "Category fetch successfully.",
+			data,
+		});
+	},
+);
+
 export const adminController = {
 	getAllUserController,
 	updateUserController,
 	getBookingController,
+	getCategoryController,
 };

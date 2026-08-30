@@ -118,11 +118,16 @@ const getBookingsService = async (filters: {
 		where,
 	});
 
-	return {data,metaData:{total,page,skip,limit}};
+	return { data, metaData: { total, page, skip, limit } };
+};
+const getCategoryService = async () => {
+	const data = await prisma.category.findMany();
+	return data;
 };
 
 export const categoryService = {
 	getAllUserService,
 	updateUserService,
 	getBookingsService,
+	getCategoryService,
 };

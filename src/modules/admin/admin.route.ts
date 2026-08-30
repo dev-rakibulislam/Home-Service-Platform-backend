@@ -26,5 +26,11 @@ router.get(
 	adminController.getBookingController,
 );
 
+router.get(
+	"/category",
+	authMiddleware(UserRole.ADMIN),
+	adminController.getCategoryController,
+);
+
 
 export const adminRouter = router;
