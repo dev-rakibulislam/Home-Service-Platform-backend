@@ -1,11 +1,9 @@
+import { Prisma } from "../../../generated/prisma/client";
 import { BookingStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
 import type { AuthenticatedUser } from "../../types/auth";
-import {
-	technicianProfileUpdateSchemaPayload,
-	UserRegisterPayload,
-} from "../auth/auth.validator";
+import type { technicianProfileUpdateSchemaPayload } from "../auth/auth.validator";
 import type {
 	CreateAvailabilityPayload,
 	updateBookingPayload,
@@ -56,13 +54,56 @@ const createAvailabilityService = async (
 	return result;
 };
 
-const getAvailableTechnicianService = async () => {
+const getAvailableTechnicianService = async (filters: {
+	location?: string;
+	minRating?: number;
+	maxRate?: number;
+	minExperience?: number;
+}) => {
+	const where: Prisma.TechnicianProfileWhereInput = {
+		isAvailable: true,
+	};
+
+	if (filters.minRating !== undefined) {
+		where.avgRating = {
+			gte: filters.minRating,
+		};
+	}
+	if (filters.maxRate !== undefined) {
+		where.hourlyRate = {
+			lte: filters.maxRate,
+		};
+	}
+
+	if (filters.minExperience !== undefined) {
+		where.experienceYears = {
+			gte: filters.minExperience,
+		};
+	}
+
+	if (filters.location) {
+		where.user = {
+			is: {
+				address: {
+					contains: filters.location,
+					mode: "insensitive",
+				},
+			},
+		};
+	}
+
 	const data = await prisma.technicianProfile.findMany({
-		where: {
+		where,
+		include: { user: { select: { name: true, address: true, email: true } } },
+		
+		omit: {
+			createdAt: true,
+			updatedAt: true,
 			isAvailable: true,
+			
 		},
-		omit: { createdAt: true, updatedAt: true, isAvailable: true },
 	});
+
 	return data;
 };
 

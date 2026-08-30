@@ -17,6 +17,7 @@ const createReviewService = async (
 			review: true,
 		},
 	});
+
 	if (!booking) {
 		throw new AppError(404, "Booking not found");
 	}
@@ -39,15 +40,39 @@ const createReviewService = async (
 		throw new AppError(409, "You already reviewed this booking");
 	}
 
-	const result = await prisma.review.create({
-		data: {
-			bookingId,
-			rating: payload.rating,
-			comment: payload.comment,
-		},
+	const transaction = await prisma.$transaction(async (tx) => {
+		const CreateReview = await tx.review.create({
+			data: {
+				bookingId,
+				rating: payload.rating,
+				comment: payload.comment,
+			},
+		});
+
+		const ratingResult = await tx.review.aggregate({
+			where: {
+				booking: {
+					technicianId: booking.technicianId,
+				},
+			},
+			_avg: {
+				rating: true,
+			},
+		});
+
+		await tx.technicianProfile.update({
+			where: {
+				id: booking.technicianId,
+			},
+			data: {
+				avgRating: ratingResult._avg.rating,
+			},
+		});
+
+		return CreateReview;
 	});
 
-	return result;
+	return transaction;
 };
 
 export const reviewService = {

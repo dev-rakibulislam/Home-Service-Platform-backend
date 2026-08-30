@@ -19,7 +19,15 @@ const createAvailabilityController = catchAsync(
 
 const getAvailableTechnicianController = catchAsync(
 	async (req: Request, res: Response) => {
-		const data = await technicianService.getAvailableTechnicianService();
+		const filters = {
+			location: req.query.location as string | undefined,
+			minRating: req.query.minRating ? Number(req.query.minRating) : undefined,
+			maxRate: req.query.maxRate ? Number(req.query.maxRate) : undefined,
+			minExperience: req.query.minExperience
+				? Number(req.query.minExperience)
+				: undefined,
+		};
+		const data = await technicianService.getAvailableTechnicianService(filters);
 		sendResponse(res, {
 			code: 200,
 			message: "all available technician find successfully.",
