@@ -71,8 +71,20 @@ const getMyProfileController = catchAsync(
 	},
 );
 
+const logOutController = catchAsync(
+	async (req: Request, res: Response) => {
+		res.clearCookie("accessToken")
+		res.clearCookie("refreshToken")
+		sendResponse(res, {
+			code: 200,
+			message: "User log out successfully.",
+		
+		});
+	},
+);
+
 export const authController = {
 	registerUserController,
 	loginUserController,
-	getMyProfileController,
+	getMyProfileController,logOutController
 };

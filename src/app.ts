@@ -1,5 +1,6 @@
 // biome-ignore assist/source/organizeImports: <explanation>
 import express, { type Express } from "express";
+import cors from "cors"
 import { authRouter } from "./modules/auth/auth.route";
 import AppError from "./core/error/appError";
 import cookieParser from "cookie-parser";
@@ -17,6 +18,23 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+const allowedOrigins = [
+  "http://localhost:3001",
+  "http://localhost:3000",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 app.get("/", (_, res) => {
 	res

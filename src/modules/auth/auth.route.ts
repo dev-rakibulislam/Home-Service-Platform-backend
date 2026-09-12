@@ -19,6 +19,11 @@ router.post(
 	authController.loginUserController,
 );
 
+router.post(
+	"/logout",
+	authController.logOutController,
+);
+
 router.get(
 	"/me",
 	authMiddleware(UserRole.ADMIN, UserRole.TECHNICIAN, UserRole.CUSTOMER),

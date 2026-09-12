@@ -56,7 +56,7 @@ const seedIntoDB = async () => {
 	const findAdminInDB = await prisma.user.findFirst({
 		where: {
 			role: UserRole.ADMIN,
-		},
+		},PrismaClient();
 	});
 
 	if (!findAdminInDB) {

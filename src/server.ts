@@ -8,7 +8,7 @@ async function startServer() {
 	try {
 		await prisma.$connect();
 		console.log("database connected successfully.");
-		await seedIntoDB();
+		// await seedIntoDB();
 		// for dummy data max 1 time for storage
 		// await main()
 		app.listen(config.port, () => {
