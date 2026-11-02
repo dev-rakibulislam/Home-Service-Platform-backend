@@ -16,14 +16,35 @@ const createServiceController = catchAsync(
 );
 
 const getServiceController = catchAsync(async (req: Request, res: Response) => {
-	const q = req.query;
+  const {
+    category,
+    location,
+    minRating,
+    maxPrice,
+    page,
+    limit,
+  } = req.query;
 
-	const data = await ServicesService.getAllService({
-		category: typeof q.category === "string" ? q.category : undefined,
-		location: typeof q.location === "string" ? q.location : undefined,
-		minRating: q.minRating ? Number(q.minRating) : undefined,
-		maxPrice: q.maxPrice ? Number(q.maxPrice) : undefined,
+  const result = await ServicesService.getAllService({
+    category: category as string | undefined,
+    location: location as string | undefined,
+    minRating: minRating ? Number(minRating) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    page: page ? Number(page) : 1,
+    limit: limit ? Number(limit) : 6,
+  });
+
+	sendResponse(res, {
+		code: 200,
+		message: "all service get successfully.",
+    data: result.services,
+    metaData:result.pagination
 	});
+});
+
+const getHomepageServicesController = catchAsync(async (req: Request, res: Response) => {
+
+	const data = await ServicesService.getHomepageServices();
 	sendResponse(res, {
 		code: 200,
 		message: "all service get successfully.",
@@ -31,7 +52,16 @@ const getServiceController = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getServiceDetailsController = catchAsync(async (req: Request, res: Response) => {
+	const data = await ServicesService.getServiceDetailsServices(req.params?.id as string);
+	sendResponse(res, {
+		code: 200,
+		message: "Service Details get successfully.",
+		data,
+	});
+});
+
 export const serviceController = {
 	createServiceController,
-	getServiceController,
+	getServiceController,getHomepageServicesController, getServiceDetailsController
 };

@@ -15,5 +15,7 @@ router.post(
 );
 
 router.get("/", serviceController.getServiceController);
+router.get("/homepage", serviceController.getHomepageServicesController);
+router.get("/:id", serviceController.getServiceDetailsController);
 
 export const serviceRouter = router;
