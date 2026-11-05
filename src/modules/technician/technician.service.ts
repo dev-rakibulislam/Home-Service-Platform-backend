@@ -54,6 +54,67 @@ const createAvailabilityService = async (
 	return result;
 };
 
+const getMyAvailabilityService = async (userData: AuthenticatedUser) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+
+      userId: userData.id,
+    },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found");
+  }
+
+  const result = await prisma.availabilitySlot.findMany({
+    where: {
+      technicianId: technician.id,
+    },
+    orderBy: [
+      {
+        dayOfWeek: "asc",
+      },
+      {
+        startTime: "asc",
+      },
+    ],
+  });
+
+  return result;
+};
+
+const deleteAvailabilityService = async (
+  availabilityId: string,
+  userData: AuthenticatedUser,
+) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found");
+  }
+
+  const result = await prisma.availabilitySlot.deleteMany({
+    where: {
+      id: availabilityId,
+      technicianId: technician.id,
+    },
+  });
+
+  if (result.count === 0) {
+    throw new AppError(404, "Availability slot not found");
+  }
+
+  return {
+    id: availabilityId,
+  };
+};
+
+
+
 const getAvailableTechnicianService = async (filters: {
 	location?: string;
 	minRating?: number;
@@ -95,12 +156,12 @@ const getAvailableTechnicianService = async (filters: {
 	const data = await prisma.technicianProfile.findMany({
 		where,
 		include: { user: { select: { name: true, address: true, email: true } } },
-		
+
 		omit: {
 			createdAt: true,
 			updatedAt: true,
 			isAvailable: true,
-			
+
 		},
 	});
 
@@ -185,5 +246,5 @@ export const technicianService = {
 	getAvailableTechnicianDetailsService,
 	updateMyProfileService,
 	getPendingBookingService,
-	getUpdatePendingBookingService,
+	getUpdatePendingBookingService,deleteAvailabilityService,getMyAvailabilityService
 };

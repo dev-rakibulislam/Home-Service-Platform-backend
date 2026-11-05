@@ -17,6 +17,39 @@ const createAvailabilityController = catchAsync(
 	},
 );
 
+const getMyAvailabilityController = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await technicianService.getMyAvailabilityService(req.user);
+    console.log(
+      "TECHNICIAN DETAILS:",
+      req.method,
+      req.originalUrl,
+      req.params.id,
+    );
+    sendResponse(res, {
+      code: 200,
+      message: "Availability retrieved successfully.",
+      data,
+    });
+  },
+);
+
+const deleteAvailabilityController = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await technicianService.deleteAvailabilityService(
+      req.params.id as string,
+      req.user,
+    );
+
+    sendResponse(res, {
+      code: 200,
+      message: "Availability deleted successfully.",
+      data,
+    });
+  },
+);
+
+
 const getAvailableTechnicianController = catchAsync(
 	async (req: Request, res: Response) => {
 		const filters = {
@@ -90,10 +123,12 @@ const getUpdatePendingBookingController = catchAsync(
 );
 
 export const technicianController = {
-	createAvailabilityController,
-	getAvailableTechnicianController,
-	getAvailableTechnicianDetailsController,
-	updateMyProfileController,
-	getPendingBookingController,
-	getUpdatePendingBookingController,
+  createAvailabilityController,
+  getAvailableTechnicianController,
+  getAvailableTechnicianDetailsController,
+  updateMyProfileController,
+  getPendingBookingController,
+  getUpdatePendingBookingController,
+  getMyAvailabilityController,
+  deleteAvailabilityController,
 };

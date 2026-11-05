@@ -7,46 +7,61 @@ import {
 	createAvailabilitySchema,
 	updateBookingSchema,
 } from "./technician.validator";
+
 import { technicianController } from "./technician.controller";
 import { technicianProfileUpdateSchema } from "../auth/auth.validator";
+
 const router = Router();
 
+// Availability routes
 router.post(
-	"/",
-	authMiddleware(UserRole.TECHNICIAN),
-	validateData(createAvailabilitySchema),
-	technicianController.createAvailabilityController,
+  "/",
+  authMiddleware(UserRole.TECHNICIAN),
+  validateData(createAvailabilitySchema),
+  technicianController.createAvailabilityController,
 );
 
 router.get(
-	"/",
-	//! fintering
-	technicianController.getAvailableTechnicianController,
+  "/availability",
+  authMiddleware(UserRole.TECHNICIAN),
+  technicianController.getMyAvailabilityController,
 );
 
+router.delete(
+  "/availability/:id",
+  authMiddleware(UserRole.TECHNICIAN),
+  technicianController.deleteAvailabilityController,
+);
+
+// Technician listing
+router.get("/", technicianController.getAvailableTechnicianController);
+
+// Profile
 router.put(
-	"/update-profile",
-	authMiddleware(UserRole.TECHNICIAN),
-	validateData(technicianProfileUpdateSchema),
-	technicianController.updateMyProfileController,
+  "/update-profile",
+  authMiddleware(UserRole.TECHNICIAN),
+  validateData(technicianProfileUpdateSchema),
+  technicianController.updateMyProfileController,
 );
 
+// Bookings
 router.get(
-	"/pending-booking",
-	authMiddleware(UserRole.TECHNICIAN),
-
-	technicianController.getPendingBookingController,
+  "/pending-booking",
+  authMiddleware(UserRole.TECHNICIAN),
+  technicianController.getPendingBookingController,
 );
+
 router.post(
-	"/update-booking/:id",
-	authMiddleware(UserRole.TECHNICIAN),
-	validateData(updateBookingSchema),
-	technicianController.getUpdatePendingBookingController,
+  "/update-booking/:id",
+  authMiddleware(UserRole.TECHNICIAN),
+  validateData(updateBookingSchema),
+  technicianController.getUpdatePendingBookingController,
 );
 
-// always last
+// Always last
 router.get(
-	"/:id",
-	technicianController.getAvailableTechnicianDetailsController,
+  "/:id",
+  technicianController.getAvailableTechnicianDetailsController,
 );
+
 export const technicianRouter = router;
