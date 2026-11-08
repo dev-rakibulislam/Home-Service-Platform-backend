@@ -4,7 +4,7 @@ import { UserRole } from "../../../generated/prisma/enums";
 import authMiddleware from "../../core/middleware/authentication";
 import { bookingController } from "./booking.controller";
 import { validateData } from "../../core/middleware/validator.middleware";
-import { CreateBookingSchema, getBookingSchema } from "./booking.validator";
+import { CreateBookingSchema } from "./booking.validator";
 const router = Router();
 
 router.post(
@@ -13,6 +13,14 @@ router.post(
   validateData(CreateBookingSchema),
   bookingController.createBookingController,
 );
+
+
+router.get(
+  "/",
+  authMiddleware(UserRole.CUSTOMER),
+  bookingController.getAllBookingController,
+);
+
 router.get(
   "/my-bookings/recent",
   authMiddleware(UserRole.CUSTOMER),
@@ -25,11 +33,6 @@ router.get(
   bookingController.getSingleBookingController,
 );
 
-router.get(
-  "/",
-  authMiddleware(UserRole.CUSTOMER),
-  bookingController.getAllBookingController,
-);
 
 router.post(
   "/cancel/:id",

@@ -10,48 +10,56 @@ import type {
 } from "./technician.validator";
 
 const createAvailabilityService = async (
-	payload: CreateAvailabilityPayload,
-	userData: AuthenticatedUser,
+  payload: CreateAvailabilityPayload,
+  userData: AuthenticatedUser,
 ) => {
-	const technician = await prisma.technicianProfile.findUnique({
-		where: {
-			userId: userData.id,
-		},
-	});
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+  });
 
-	if (!technician) {
-		throw new AppError(404, "Technician profile not found");
-	}
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found");
+  }
 
-	if (payload.startTime >= payload.endTime) {
-		throw new AppError(400, "End time must be greater than start time");
-	}
+  if (payload.startTime >= payload.endTime) {
+    throw new AppError(
+      400,
+      "End time must be greater than start time",
+    );
+  }
 
-	const existingSlots = await prisma.availabilitySlot.findMany({
-		where: {
-			technicianId: technician.id,
-			dayOfWeek: payload.dayOfWeek,
-		},
-	});
+  return prisma.$transaction(async (tx) => {
+    const existingSlots = await tx.availabilitySlot.findMany({
+      where: {
+        technicianId: technician.id,
+        dayOfWeek: payload.dayOfWeek,
+      },
+    });
 
-	const isOverlapping = existingSlots.some((slot) => {
-		return payload.startTime < slot.endTime && payload.endTime > slot.startTime;
-	});
+    const isOverlapping = existingSlots.some(
+      (slot) =>
+        payload.startTime < slot.endTime &&
+        payload.endTime > slot.startTime,
+    );
 
-	if (isOverlapping) {
-		throw new AppError(409, "This time slot overlaps with an existing slot");
-	}
+    if (isOverlapping) {
+      throw new AppError(
+        409,
+        "This time slot overlaps with an existing slot",
+      );
+    }
 
-	const result = await prisma.availabilitySlot.create({
-		data: {
-			technicianId: technician.id,
-			dayOfWeek: payload.dayOfWeek,
-			startTime: payload.startTime,
-			endTime: payload.endTime,
-		},
-	});
-
-	return result;
+    return tx.availabilitySlot.create({
+      data: {
+        technicianId: technician.id,
+        dayOfWeek: payload.dayOfWeek,
+        startTime: payload.startTime,
+        endTime: payload.endTime,
+      },
+    });
+  });
 };
 
 const getMyAvailabilityService = async (userData: AuthenticatedUser) => {

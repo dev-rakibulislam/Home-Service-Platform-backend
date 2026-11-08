@@ -19,15 +19,23 @@ const createBookingController = catchAsync(
 );
 
 const getAllBookingController = catchAsync(
-	async (req: Request, res: Response) => {
-		const data = await bookingService.getMyService(req.user);
+  async (req: Request, res: Response) => {
+    const data = await bookingService.getMyBookingService(
+      req.user,
+      {
+        page: Number(req.query.page) || 1,
+        limit: Number(req.query.limit) || 10,
+        status: req.query.status as string | undefined,
+        sortOrder: req.query.sortOrder as string | undefined,
+      },
+    );
 
-		sendResponse(res, {
-			code: 200,
-			message: "booking found successfully.",
-			data,
-		});
-	},
+    sendResponse(res, {
+      code: 200,
+      message: "Bookings retrieved successfully.",
+      data,
+    });
+  },
 );
 
 const getSingleBookingController = catchAsync(
