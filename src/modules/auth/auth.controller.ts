@@ -40,21 +40,18 @@ const loginUserController = catchAsync(async (req: Request, res: Response) => {
   const { accessToken, refreshToken } = await authService.loginUserInDb(
     req.body,
   );
-
   setCookie(res, "accessToken", accessToken, {
     httpOnly: true,
     secure: true,
     maxAge: 3,
     sameSite: "lax",
   });
-
   setCookie(res, "refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
     maxAge: 30,
     sameSite: "lax",
   });
-
   sendResponse(res, {
     code: 201,
     message: "User login successfully.",
