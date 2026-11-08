@@ -4,6 +4,7 @@ import { sendResponse } from "../../core/utils/response";
 import { ServicesService } from "./service.service";
 import {
   createServiceSchema,
+  getAllServicesSchema,
   myServicesQuerySchema,
   updateServiceSchema,
 } from "./service.validation";
@@ -100,6 +101,18 @@ const getHomepageServicesController = catchAsync(
     });
   },
 );
+export const getServicesController = catchAsync(async (req, res) => {
+  const query = getAllServicesSchema.parse(req.query);
+
+  const result = await ServicesService.getAllServices(query);
+
+  sendResponse(res, {
+    code: 200,
+    message: "Services retrieved successfully",
+    data: result.data,
+    metaData: result.meta,
+  });
+});
 
 const getServiceDetailsController = catchAsync(
   async (req: Request, res: Response) => {
@@ -121,5 +134,5 @@ export const serviceController = {
   getServiceDetailsController,
   getMyServicesController,
   updateMyServiceController,
-  deleteMyServiceController,
+  deleteMyServiceController,getServicesController
 };

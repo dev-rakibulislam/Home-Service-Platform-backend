@@ -102,6 +102,57 @@ const getSingleBookingService = async (id: string) => {
 	return data;
 };
 
+const getMyRecentBookings = async (userId: string) => {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      customerId: userId,
+    },
+
+    orderBy: {
+      createdAt: "desc",
+    },
+
+    take: 5,
+
+    select: {
+      id: true,
+      bookingDate: true,
+      status: true,
+      totalPrice: true,
+
+      service: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+
+      technician: {
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return bookings.map((booking) => ({
+    id: booking.id,
+    bookingDate: booking.bookingDate,
+    status: booking.status,
+    totalPrice: booking.totalPrice,
+    service: booking.service,
+    technician: {
+      id: booking.technician.user.id,
+      name: booking.technician.user.name,
+    },
+  }));
+};
+
 const cancelBookingService = async (id: string) => {
 	const data = await prisma.booking.findUnique({
 		where: { id },
@@ -126,5 +177,5 @@ export const bookingService = {
 	createAvailabilityService,
 	getMyService,
 	getSingleBookingService,
-	cancelBookingService,
+	cancelBookingService,getMyRecentBookings
 };

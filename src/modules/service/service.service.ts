@@ -176,6 +176,93 @@ const getHomepageServices = async () => {
   });
 };
 
+const getAllServices = async (query: {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  categoryId?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}) => {
+  const {
+    page = 1,
+    limit = 10,
+    searchTerm,
+    categoryId,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = query;
+
+  const whereCondition = {
+    isActive: true,
+
+    technician: {
+      avgRating: { gte: 4.1 },
+      isAvailable: true,
+      status: "ACTIVE" as const,
+    },
+
+    ...(categoryId && { categoryId }),
+
+    ...(searchTerm && {
+      name: {
+        contains: searchTerm,
+        mode: "insensitive" as const,
+      },
+    }),
+  };
+
+  const [services, total] = await prisma.$transaction([
+    prisma.service.findMany({
+      where: whereCondition,
+
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        duration: true,
+
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        technician: {
+          select: {
+            userName: true,
+            avgRating: true,
+            experienceYears: true,
+            isAvailable: true,
+          },
+        },
+      },
+
+      orderBy: {
+        [sortBy]: sortOrder,
+      },
+
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+
+    prisma.service.count({
+      where: whereCondition,
+    }),
+  ]);
+
+  return {
+    data: services,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
 const getServiceDetailsServices = async (id: string) => {
   return prisma.service.findUnique({
     where: {
@@ -400,5 +487,5 @@ export const ServicesService = {
   getServiceDetailsServices,
   deleteMyService,
   updateMyService,
-  getMyServices,
+  getMyServices,getAllServices
 };

@@ -18,6 +18,8 @@ const technicianAuth = authMiddleware(UserRole.TECHNICIAN);
 
 router.post("/", technicianAuth, serviceController.createServiceController);
 
+router.get("/", serviceController.getServicesController);
+
 router.get("/homepage", serviceController.getHomepageServicesController);
 
 router.get("/my-services", technicianAuth, serviceController.getMyServicesController);

@@ -38,6 +38,19 @@ export const myServicesQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
 });
+
+export const getAllServicesSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  searchTerm: z.string().optional(),
+  categoryId: z.string().optional(),
+  sortBy: z
+    .enum(["createdAt", "price", "name"])
+    .default("createdAt"),
+
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
 export type CreateServicePayload = z.infer<typeof createServiceSchema>;
 export type UpdateServicePayload = z.infer<typeof updateServiceSchema>;
 export type createServiceSchema = z.infer<typeof createServiceSchema>;

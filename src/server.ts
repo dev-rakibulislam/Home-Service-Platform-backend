@@ -1,8 +1,6 @@
 import app from "./app";
 import { config } from "./config/env";
 import { prisma } from "./config/prisma";
-import main from "./needSeed";
-import seedIntoDB from "./seed";
 
 async function startServer() {
 	try {

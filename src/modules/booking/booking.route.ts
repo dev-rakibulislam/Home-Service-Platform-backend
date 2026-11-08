@@ -8,28 +8,33 @@ import { CreateBookingSchema, getBookingSchema } from "./booking.validator";
 const router = Router();
 
 router.post(
-	"/",
-	authMiddleware(UserRole.CUSTOMER),
-	validateData(CreateBookingSchema),
-	bookingController.createBookingController,
+  "/",
+  authMiddleware(UserRole.CUSTOMER),
+  validateData(CreateBookingSchema),
+  bookingController.createBookingController,
+);
+router.get(
+  "/my-bookings/recent",
+  authMiddleware(UserRole.CUSTOMER),
+  bookingController.getMyRecentBookingsController,
 );
 
 router.get(
-	"/:id",
-	authMiddleware(UserRole.CUSTOMER),
-	bookingController.getSingleBookingController,
+  "/:id",
+  authMiddleware(UserRole.CUSTOMER),
+  bookingController.getSingleBookingController,
 );
 
 router.get(
-	"/",
-	authMiddleware(UserRole.CUSTOMER),
-	bookingController.getAllBookingController,
+  "/",
+  authMiddleware(UserRole.CUSTOMER),
+  bookingController.getAllBookingController,
 );
 
 router.post(
-	"/cancel/:id",
-	authMiddleware(UserRole.CUSTOMER),
-	bookingController.cancelBookingController,
+  "/cancel/:id",
+  authMiddleware(UserRole.CUSTOMER),
+  bookingController.cancelBookingController,
 );
 
 export const bookingRouter = router;

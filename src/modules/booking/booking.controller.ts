@@ -58,9 +58,21 @@ const cancelBookingController = catchAsync(
 	},
 );
 
+const getMyRecentBookingsController = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const result = await bookingService.getMyRecentBookings(userId);
+
+  sendResponse(res, {
+    code: 200,
+    message: "Recent bookings retrieved successfully!",
+    data: result,
+  });
+});
+
 export const bookingController = {
 	createBookingController,
 	getAllBookingController,
 	getSingleBookingController,
-	cancelBookingController,
+	cancelBookingController,getMyRecentBookingsController
 };

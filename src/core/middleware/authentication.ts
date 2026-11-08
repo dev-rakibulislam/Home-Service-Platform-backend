@@ -6,7 +6,7 @@ import { prisma } from "../../config/prisma";
 import AppError from "../error/appError";
 import { UserRole, UserStatus } from "../../../generated/prisma/enums";
 import { verifyToken } from "../utils/jwt";
-import { JwtPayload } from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 
 const authMiddleware = (...requiredRoles: UserRole[]) => {
 	return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
