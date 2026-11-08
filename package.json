@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "node dist/server.js",
 		"dev": "tsx watch ./src/server.ts",
-		"build": "tsup",
+    "build": "prisma generate && tsup",
     "lint": "biome check",
     "format": "biome format --write",
 		"generate": "tsx scripts/generate.ts",
