@@ -12,21 +12,18 @@ import { technicianRouter } from "./modules/technician/technician.route";
 import { bookingRouter } from "./modules/booking/booking.route";
 import { paymentRouter } from "./modules/payment/payment.route";
 import { reviewRouter } from "./modules/review/review.route";
+import { config } from "./config/env";
 const app: Express = express();
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-const allowedOrigins = [
-  "http://localhost:3001",
-  "http://localhost:3000",
-];
+const d = config;
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || d.allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

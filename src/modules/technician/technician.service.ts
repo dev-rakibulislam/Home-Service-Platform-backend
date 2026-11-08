@@ -1,4 +1,4 @@
-import { Prisma } from "../../../generated/prisma/client";
+import type { Prisma } from "../../../generated/prisma/client";
 import { BookingStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
@@ -113,6 +113,38 @@ const deleteAvailabilityService = async (
   };
 };
 
+const getMyBookingsService = async (userData: AuthenticatedUser) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: { userId: userData.id },
+    select: { id: true },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found");
+  }
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      technicianId: technician.id,
+    },
+    include: {
+      customer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phoneNumber: true,
+          address: true,
+          image: true,
+        },
+      },
+      service: true,
+    },
+    orderBy: [{ bookingDate: "desc" }, { createdAt: "desc" }],
+  });
+
+  return bookings;
+};
 
 
 const getAvailableTechnicianService = async (filters: {
@@ -215,36 +247,53 @@ const getPendingBookingService = async (user: AuthenticatedUser) => {
 };
 
 const getUpdatePendingBookingService = async (
-	id: string,
-	payload: updateBookingPayload,
+  id: string,
+  payload: updateBookingPayload,
+  userData: AuthenticatedUser,
 ) => {
-	const existingBooking = await prisma.booking.findUnique({ where: { id } });
-	if (!existingBooking) {
-		throw new AppError(400, "No booking found");
-	}
-	if (existingBooking.status === BookingStatus.COMPLETED) {
-		throw new AppError(400, "Booking  already Completed!");
-	}
-	const data = await prisma.booking.update({
-		where: {
-			id,
-		},
-		data: {
-			status: payload.status,
-		},
-	});
-	if (!data) {
-		throw new AppError(400, "Pending Booking not found");
-	}
+  const technician = await prisma.technicianProfile.findUnique({
+    where: { userId: userData.id },
+    select: { id: true },
+  });
 
-	return data;
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found");
+  }
+
+  const existingBooking = await prisma.booking.findFirst({
+    where: {
+      id,
+      technicianId: technician.id,
+    },
+  });
+
+  if (!existingBooking) {
+    throw new AppError(404, "Booking not found");
+  }
+
+  if (existingBooking.status !== BookingStatus.PENDING) {
+    throw new AppError(400, "Only pending bookings can be updated");
+  }
+
+  const updatedBooking = await prisma.booking.update({
+    where: { id },
+    data: {
+      status: payload.status,
+    },
+  });
+
+  return updatedBooking;
 };
 
+
 export const technicianService = {
-	createAvailabilityService,
-	getAvailableTechnicianService,
-	getAvailableTechnicianDetailsService,
-	updateMyProfileService,
-	getPendingBookingService,
-	getUpdatePendingBookingService,deleteAvailabilityService,getMyAvailabilityService
+  createAvailabilityService,
+  getAvailableTechnicianService,
+  getAvailableTechnicianDetailsService,
+  updateMyProfileService,
+  getPendingBookingService,
+  getUpdatePendingBookingService,
+  deleteAvailabilityService,
+  getMyAvailabilityService,
+  getMyBookingsService,
 };

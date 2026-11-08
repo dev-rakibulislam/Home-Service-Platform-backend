@@ -22,6 +22,14 @@ router.post(
 );
 
 router.get(
+  "/bookings",
+  authMiddleware(UserRole.TECHNICIAN),
+  technicianController.getMyBookingsController,
+);
+
+
+
+router.get(
   "/availability",
   authMiddleware(UserRole.TECHNICIAN),
   technicianController.getMyAvailabilityController,

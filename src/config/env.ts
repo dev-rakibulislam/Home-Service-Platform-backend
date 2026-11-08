@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import path from "node:path";
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
+if (!process.env.allowedOrigins) {
+  throw new Error("allowedOrigins need");
+}
 if (!process.env.NODE_ENV) {
 	throw new Error("NODE_ENV need");
 }
@@ -22,7 +25,7 @@ const isProd = process.env.NODE_ENV === "PRODUCTION";
 export const config = {
 	node_env: process.env.NODE_ENV || "development",
 	port: process.env.PORT || 3000,
-
+  allowedOrigins: process.env.allowedOrigins.split(","),
 	app_url: isProd ? process.env.PROD_APP_URL : process.env.DEV_APP_URL,
 
 	database_url: process.env.DATABASE_URL,

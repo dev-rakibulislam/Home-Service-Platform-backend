@@ -108,18 +108,32 @@ const getPendingBookingController = catchAsync(
 	},
 );
 
+const getMyBookingsController = catchAsync(
+  async (req: Request, res: Response) => {
+    const data = await technicianService.getMyBookingsService(req.user);
+
+    sendResponse(res, {
+      code: 200,
+      message: "My bookings retrieved successfully.",
+      data,
+    });
+  },
+);
+
 const getUpdatePendingBookingController = catchAsync(
-	async (req: Request, res: Response) => {
-		const data = await technicianService.getUpdatePendingBookingService(
-			req.params.id as string,
-			req.body,
-		);
-		sendResponse(res, {
-			code: 200,
-			message: "Pending Booking updated successfully.",
-			data,
-		});
-	},
+  async (req: Request, res: Response) => {
+    const data = await technicianService.getUpdatePendingBookingService(
+      req.params.id as string,
+      req.body,
+      req.user,
+    );
+
+    sendResponse(res, {
+      code: 200,
+      message: "Booking updated successfully.",
+      data,
+    });
+  },
 );
 
 export const technicianController = {
@@ -131,4 +145,5 @@ export const technicianController = {
   getUpdatePendingBookingController,
   getMyAvailabilityController,
   deleteAvailabilityController,
+  getMyBookingsController,
 };

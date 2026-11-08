@@ -14,8 +14,17 @@ router.post(
 	serviceController.createServiceController,
 );
 
-router.get("/", serviceController.getServiceController);
+const technicianAuth = authMiddleware(UserRole.TECHNICIAN);
+
+router.post("/", technicianAuth, serviceController.createServiceController);
 router.get("/homepage", serviceController.getHomepageServicesController);
+
+router.get("/my-services", technicianAuth, serviceController.getMyServicesController);
+
+router.patch("/:id", technicianAuth, serviceController.updateMyServiceController);
+
+router.delete("/:id", technicianAuth, serviceController.deleteMyServiceController);
+
 router.get("/:id", serviceController.getServiceDetailsController);
 
 export const serviceRouter = router;

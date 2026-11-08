@@ -2,43 +2,49 @@ import { Prisma } from "../../../generated/prisma/browser";
 import { prisma } from "../../config/prisma";
 import AppError from "../../core/error/appError";
 import type { AuthenticatedUser } from "../../types/auth";
-import type { createServiceSchema } from "./service.validation";
+import type {
+  createServiceSchema,
+  UpdateServicePayload,
+} from "./service.validation";
 
 const createService = async (
-	payload: createServiceSchema,
-	userData: AuthenticatedUser,
+  payload: createServiceSchema,
+  userData: AuthenticatedUser,
 ) => {
-	const category = await prisma.category.findUnique({
-		where: { id: payload.categoryId },
-	});
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-	if (!category) {
-		throw new AppError(404, "Category not found!");
-	}
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found!");
+  }
 
-	const technician = await prisma.technicianProfile.findUnique({
-		where: {
-			userId: userData.id,
-		},
-	});
+  const category = await prisma.category.findUnique({
+    where: {
+      id: payload.categoryId,
+    },
+  });
 
-	if (!technician) {
-		throw new AppError(404, "technician not found!");
-	}
+  if (!category?.isActive) {
+    throw new AppError(404, "Active category not found!");
+  }
 
-	const { categoryId, description, name, price, duration } = payload;
+  const result = await prisma.service.create({
+    data: {
+      ...payload,
+      technicianId: technician.id,
+    },
+    include: {
+      category: true,
+    },
+  });
 
-	const result = await prisma.service.create({
-		data: {
-			duration,
-			name,
-			price,
-			categoryId,
-			description,
-			technicianId: technician.id,
-		},
-	});
-	return result;
+  return result;
 };
 
 const getAllService = async (filters: {
@@ -138,7 +144,6 @@ const getAllService = async (filters: {
 };
 
 const getHomepageServices = async () => {
-
   return await prisma.service.findMany({
     where: {
       isActive: true,
@@ -199,7 +204,7 @@ const getServiceDetailsServices = async (id: string) => {
           experienceYears: true,
           isAvailable: true,
           user: {
-            omit:{password:true,role:true,status:true}
+            omit: { password: true, role: true, status: true },
           },
         },
       },
@@ -207,8 +212,193 @@ const getServiceDetailsServices = async (id: string) => {
   });
 };
 
+//* update
+// 2. GET MY SERVICES
+const getMyServices = async (
+  userData: AuthenticatedUser,
+  filters: {
+    page?: number;
+    limit?: number;
+  },
+) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found!");
+  }
+
+  const page = Math.max(1, filters.page ?? 1);
+  const limit = Math.min(100, Math.max(1, filters.limit ?? 10));
+
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.ServiceWhereInput = {
+    technicianId: technician.id,
+  };
+
+  const [services, total] = await prisma.$transaction([
+    prisma.service.findMany({
+      where,
+      include: {
+        category: true,
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
+
+    prisma.service.count({
+      where,
+    }),
+  ]);
+
+  return {
+    services,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+// 3. UPDATE MY SERVICE
+const updateMyService = async (
+  serviceId: string,
+  payload: UpdateServicePayload,
+  userData: AuthenticatedUser,
+) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found!");
+  }
+
+  const service = await prisma.service.findFirst({
+    where: {
+      id: serviceId,
+      technicianId: technician.id,
+    },
+  });
+
+  if (!service) {
+    throw new AppError(404, "Service not found!");
+  }
+
+  if (payload.categoryId) {
+    const category = await prisma.category.findUnique({
+      where: {
+        id: payload.categoryId,
+      },
+      select: {
+        id: true,
+        isActive: true,
+      },
+    });
+
+    if (!category?.isActive) {
+      throw new AppError(404, "Active category not found!");
+    }
+  }
+
+  const result = await prisma.service.update({
+    where: {
+      id: service.id,
+    },
+    data: payload,
+    include: {
+      category: true,
+    },
+  });
+
+  return result;
+};
+
+// 4. DELETE MY SERVICE
+const deleteMyService = async (
+  serviceId: string,
+  userData: AuthenticatedUser,
+) => {
+  const technician = await prisma.technicianProfile.findUnique({
+    where: {
+      userId: userData.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!technician) {
+    throw new AppError(404, "Technician profile not found!");
+  }
+
+  const service = await prisma.service.findFirst({
+    where: {
+      id: serviceId,
+      technicianId: technician.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!service) {
+    throw new AppError(404, "Service not found!");
+  }
+
+  const bookingCount = await prisma.booking.count({
+    where: {
+      serviceId: service.id,
+    },
+  });
+
+  // Preserve booking history if bookings exist.
+  if (bookingCount > 0) {
+    return prisma.service.update({
+      where: {
+        id: service.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+  }
+
+  return prisma.service.delete({
+    where: {
+      id: service.id,
+    },
+  });
+};
 
 export const ServicesService = {
-	createService,
-	getAllService,getHomepageServices,getServiceDetailsServices
+  createService,
+  getAllService,
+  getHomepageServices,
+  getServiceDetailsServices,
+  deleteMyService,
+  updateMyService,
+  getMyServices,
 };
